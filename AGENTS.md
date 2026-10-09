@@ -15,3 +15,5 @@
 - Preserve originals in private Storage with owner-prefixed paths and short-lived signed previews; document metadata must never contain public file links.
 - Separate document archiving from financial recognition; phase-one uploads do not create expenses or claim AI extraction.
 - Use shared semantic design tokens and reusable finance components so desktop and mobile surfaces stay consistent.
+- Keep AI suggestions separate from reviewed metadata, and confirm document reviews through an owner-scoped, row-locked database function so expense creation is atomic and repeat clicks cannot duplicate it.
+- Run document analysis only on explicit user action through authenticated server functions, with streamed Lovable AI calls and no automatic retries after terminal failures.
