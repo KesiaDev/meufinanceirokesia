@@ -12,7 +12,24 @@ export function AuthForm({ recovery = false }: { recovery?: boolean }) {
  const [mode,setMode] = useState<'login'|'signup'|'forgot'>('login');
  const [name,setName] = useState(''); const [email,setEmail] = useState(''); const [password,setPassword] = useState('');
  const [busy,setBusy] = useState(false); const [error,setError] = useState(''); const [notice,setNotice] = useState(''); const [recoveryReady,setRecoveryReady] = useState(false);
- useEffect(() => { if (recovery) { const params = new URLSearchParams(window.location.hash.slice(1)); if (params.get('type') === 'recovery') sessionStorage.setItem('finance-recovery','1'); supabase.auth.getUser().then(({data}) => setRecoveryReady(Boolean(data.user) && sessionStorage.getItem('finance-recovery') === '1')); } else { supabase.auth.getUser().then(({data}) => { if(data.user) navigate({to:'/painel'}); }); } },[recovery,navigate]);
+ useEffect(() => {
+  async function initialize() {
+   if (!recovery) { const {data} = await supabase.auth.getUser(); if(data.user) navigate({to:'/painel'}); return; }
+   const params = new URLSearchParams(window.location.hash.slice(1));
+   if (params.get('type') === 'recovery') {
+    const access_token = params.get('access_token'); const refresh_token = params.get('refresh_token');
+    if (access_token && refresh_token) {
+     const {error} = await supabase.auth.setSession({access_token,refresh_token});
+     if (error) { setError('O link expirou. Solicite uma nova recuperação de senha.'); return; }
+     sessionStorage.setItem('finance-recovery','1');
+     window.history.replaceState(null, '', '/reset-password');
+    }
+   }
+   const {data} = await supabase.auth.getUser();
+   setRecoveryReady(Boolean(data.user) && sessionStorage.getItem('finance-recovery') === '1');
+  }
+  initialize();
+ },[recovery,navigate]);
  async function submit(e:FormEvent) { e.preventDefault(); setBusy(true);setError('');setNotice(''); try {
   if(recovery) { if(!recoveryReady) throw new Error('O link de recuperação é inválido ou expirou. Solicite um novo link.'); const {error} = await supabase.auth.updateUser({password}); if(error) throw error; sessionStorage.removeItem('finance-recovery');setNotice('Senha atualizada. Você já pode acessar sua conta.'); }
   else if(mode==='forgot') { const {error} = await supabase.auth.resetPasswordForEmail(email,{redirectTo:`${window.location.origin}/reset-password`});if(error) throw error;setNotice('Se houver uma conta com esse e-mail, você receberá um link para redefinir a senha.'); }
