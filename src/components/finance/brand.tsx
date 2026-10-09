@@ -1,0 +1,2 @@
+import { ChartNoAxesCombined } from 'lucide-react';
+export function Brand() { return <div className="brand"><div className="brand-mark"><ChartNoAxesCombined size={23}/></div><div><div className="brand-title">Meu Financeiro <span>IA</span></div><div className="brand-subtitle">Sua vida financeira, em ordem.</div></div></div>; }
