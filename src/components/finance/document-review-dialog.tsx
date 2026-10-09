@@ -6,14 +6,15 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { analyzeDocument, confirmDocument } from '@/lib/document-review.functions';
-import { extractionSchema, canCreateExpense, type DocumentReview } from '@/lib/document-review';
+import { extractionSchema, reviewSchema, canCreateExpense, type DocumentReview } from '@/lib/document-review';
 import type { Tables } from '@/integrations/supabase/types';
 
 export function DocumentReviewDialog({doc,onClose,onPreview}:{doc:Tables<'documents'>;onClose:()=>void;onPreview:()=>void}) {
  const analyze=useServerFn(analyzeDocument);const confirm=useServerFn(confirmDocument);const query=useQueryClient();
  const parsed=extractionSchema.safeParse(doc.ai_extraction);const ai=parsed.success?parsed.data:null;
+ const saved=reviewSchema.safeParse(doc.reviewed_data);
  const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [createExpense,setCreateExpense]=useState(false);
- const [review,setReview]=useState<DocumentReview>({document_type:doc.reviewed_at?doc.document_type:ai?.document_type??doc.document_type,kind:ai?.kind??'other',issuer:doc.reviewed_at?doc.issuer??'':ai?.issuer??'',document_date:doc.reviewed_at?doc.document_date??'':ai?.document_date??'',due_date:doc.reviewed_at?doc.due_date??'':ai?.due_date??'',total_amount:doc.reviewed_at?doc.total_amount:ai?.total_amount??null,currency:ai?.currency??'',description:ai?.description??'',notes:doc.notes});
+ const [review,setReview]=useState<DocumentReview>(saved.success?saved.data:{document_type:doc.reviewed_at?doc.document_type:ai?.document_type??doc.document_type,kind:ai?.kind??'other',issuer:doc.reviewed_at?doc.issuer??'':ai?.issuer??'',document_date:doc.reviewed_at?doc.document_date??'':ai?.document_date??'',due_date:doc.reviewed_at?doc.due_date??'':ai?.due_date??'',total_amount:doc.reviewed_at?doc.total_amount:ai?.total_amount??null,currency:ai?.currency??'',description:ai?.description??'',notes:doc.notes});
  const completed=Boolean(doc.reviewed_at);const eligible=canCreateExpense(review,ai?.kind);
  async function read(){setBusy(true);setError('');try{const result=await analyze({data:{id:doc.id}});if(!result.ok)setError(result.error);await query.invalidateQueries({queryKey:['workspace']});}catch{setError('Não foi possível concluir a leitura. Atualize a lista para conferir o estado do documento.');}finally{setBusy(false);}}
  async function save(){setBusy(true);setError('');try{const result=await confirm({data:{id:doc.id,review,createExpense:createExpense&&eligible}});if(!result.ok){setError(result.error);return;}await query.invalidateQueries({queryKey:['workspace']});toast.success(createExpense&&eligible?'Documento revisado e despesa registrada como pendente.':'Revisão guardada.');onClose();}catch{setError('Não foi possível guardar a revisão. Confira os campos preenchidos.');}finally{setBusy(false);}}
