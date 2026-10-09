@@ -57,6 +57,9 @@ export type Database = {
       }
       documents: {
         Row: {
+          ai_error_status: number | null
+          ai_extraction: Json | null
+          confirmed_expense_id: string | null
           created_at: string
           document_date: string | null
           document_type: string
@@ -71,12 +74,17 @@ export type Database = {
           mime_type: string
           notes: string
           original_filename: string
+          processing_error: string | null
           processing_status: string
+          reviewed_at: string | null
           total_amount: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          ai_error_status?: number | null
+          ai_extraction?: Json | null
+          confirmed_expense_id?: string | null
           created_at?: string
           document_date?: string | null
           document_type?: string
@@ -91,12 +99,17 @@ export type Database = {
           mime_type: string
           notes?: string
           original_filename: string
+          processing_error?: string | null
           processing_status?: string
+          reviewed_at?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          ai_error_status?: number | null
+          ai_extraction?: Json | null
+          confirmed_expense_id?: string | null
           created_at?: string
           document_date?: string | null
           document_type?: string
@@ -111,12 +124,21 @@ export type Database = {
           mime_type?: string
           notes?: string
           original_filename?: string
+          processing_error?: string | null
           processing_status?: string
+          reviewed_at?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "documents_confirmed_expense_id_fkey"
+            columns: ["confirmed_expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documents_user_id_fkey"
             columns: ["user_id"]
@@ -224,7 +246,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      confirm_document_review: {
+        Args: {
+          p_create_expense?: boolean
+          p_document_id: string
+          p_review: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
