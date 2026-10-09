@@ -77,6 +77,7 @@ export type Database = {
           processing_error: string | null
           processing_status: string
           reviewed_at: string | null
+          reviewed_data: Json | null
           total_amount: number | null
           updated_at: string
           user_id: string
@@ -102,6 +103,7 @@ export type Database = {
           processing_error?: string | null
           processing_status?: string
           reviewed_at?: string | null
+          reviewed_data?: Json | null
           total_amount?: number | null
           updated_at?: string
           user_id: string
@@ -127,6 +129,7 @@ export type Database = {
           processing_error?: string | null
           processing_status?: string
           reviewed_at?: string | null
+          reviewed_data?: Json | null
           total_amount?: number | null
           updated_at?: string
           user_id?: string
