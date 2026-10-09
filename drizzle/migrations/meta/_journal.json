@@ -22,6 +22,20 @@
       "when": 1791572785516,
       "tag": "0002_audit_account_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791573174657,
+      "tag": "0003_document_ai_review",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791573457286,
+      "tag": "0004_preserve_confirmed_document_review",
+      "breakpoints": true
     }
   ]
 }
