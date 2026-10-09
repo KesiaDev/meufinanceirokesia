@@ -1,0 +1,10 @@
+REVOKE ALL ON FUNCTION public.create_finance_profile() FROM PUBLIC, anon, authenticated;
+CREATE TABLE public.audit_logs (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE, entity_type text NOT NULL, entity_id uuid NOT NULL, action text NOT NULL, previous_data jsonb, new_data jsonb, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.audit_logs TO authenticated;
+GRANT ALL ON public.audit_logs TO service_role;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY audit_read ON public.audit_logs FOR SELECT TO authenticated USING (user_id=auth.uid());
+CREATE INDEX audit_owner_date ON public.audit_logs(user_id,created_at DESC);
+CREATE FUNCTION public.audit_finance_document() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$ BEGIN IF TG_OP = 'DELETE' THEN INSERT INTO public.audit_logs(user_id,entity_type,entity_id,action,previous_data) VALUES(OLD.user_id,'document',OLD.id,TG_OP,to_jsonb(OLD));RETURN OLD; ELSIF TG_OP = 'UPDATE' THEN NEW.updated_at=now();INSERT INTO public.audit_logs(user_id,entity_type,entity_id,action,previous_data,new_data) VALUES(NEW.user_id,'document',NEW.id,TG_OP,to_jsonb(OLD),to_jsonb(NEW));RETURN NEW; ELSE INSERT INTO public.audit_logs(user_id,entity_type,entity_id,action,new_data) VALUES(NEW.user_id,'document',NEW.id,TG_OP,to_jsonb(NEW));RETURN NEW; END IF; END; $$;
+REVOKE ALL ON FUNCTION public.audit_finance_document() FROM PUBLIC,anon,authenticated;
+CREATE TRIGGER audit_documents BEFORE INSERT OR UPDATE OR DELETE ON public.documents FOR EACH ROW EXECUTE FUNCTION public.audit_finance_document();

@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep signed-in finance pages under the client-only authenticated layout; public account and recovery pages remain outside it because browser-held sessions cannot gate SSR.
+- Load private workspace data with authenticated server functions and shared query options so the owner is verified on every read.
+- Preserve originals in private Storage with owner-prefixed paths and short-lived signed previews; document metadata must never contain public file links.
+- Separate document archiving from financial recognition; phase-one uploads do not create expenses or claim AI extraction.
+- Use shared semantic design tokens and reusable finance components so desktop and mobile surfaces stay consistent.
