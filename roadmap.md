@@ -2,8 +2,9 @@
 
 - [x] Fase 1: interface, conta com perfil, recuperação de senha, dados privados e arquivo de documentos. Entrada, envio, leitura após recarga, visualização temporária, preferências e saída verificados com conta temporária.
 
+- [ ] Fase 2: extração real por IA, revisão editável e confirmação sem duplicação; verificar com documento real de teste.
+
 ## Etapas futuras (fora da entrega atual)
-- Fase 2: extração real por IA, revisão e confirmação.
 - Fase 3: categorias e registro de despesas da Rebeca e da casa.
 - Fase 4: pagamentos e cartões sem duplicação.
 - Fase 5: relatórios e exportações.
