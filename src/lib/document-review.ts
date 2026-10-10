@@ -21,7 +21,7 @@ export const reviewSchema = z.object({
   document_type:z.string().trim().min(1).max(150),kind:z.enum(['expense','statement','payment','other']),
   issuer:z.string().max(500),document_date:date,due_date:date,
   total_amount:z.number().min(0).max(999999999999.99).nullable(),currency:z.string().max(10),
-  description:z.string().trim().max(1000),notes:z.string().max(10000),
+   description:z.string().trim().max(1000),notes:z.string().max(10000),category:z.string().trim().max(100).optional(),
 });
 export type DocumentReview = z.infer<typeof reviewSchema>;
 export function normalizeExtraction(input: Extraction): Extraction {
