@@ -14,7 +14,7 @@ import { DocumentReviewDialog } from './document-review-dialog';
 import { ExpenseReports, ExpenseCharts } from './expense-reports';
 import { CategoryManager } from './category-manager';
 import { expenseReport } from '@/lib/expense-reports';
-import documentsArt from '@/assets/documents.jpg';
+import documentsArt from '@/assets/floral-documents.jpg';
 import type { Tables } from '@/integrations/supabase/types';
 
 type View = 'painel'|'documentos'|'despesas'|'rebeca'|'casa'|'configuracoes'|'relatorios';
