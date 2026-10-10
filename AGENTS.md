@@ -21,3 +21,4 @@
 - Derive report totals and chart series from the same filtered expense rows using integer cents, excluding cancelled expenses so every report surface agrees.
 
 - Uploads offer an explicit AI-reading selection before sending and open the uploaded document review afterward; financial records still require separate confirmation.
+- Manual document reviews retain a manual source marker and use the same owner-locked confirmation as AI reviews, without creating AI extraction data.
