@@ -14,3 +14,6 @@
 
 ## Verificação pendente
 - Entrega de e-mail de cadastro e recuperação em caixa real e entrada com Google dependem da confirmação do usuário no serviço externo; os métodos estão ativados e a atualização via sessão real de recuperação foi testada.
+## Correção do envio de fotos
+- [x] Envio com opção explícita de leitura por IA, categoria antes da leitura e abertura imediata da revisão; descrição McLanche Feliz, data 09/10/2026 e valor verificados com recibo fictício.
+- [x] Fotografar e preencher descrição, data e valor manualmente, sem leitura por IA, com confirmação segura da despesa; persistência após recarga e ausência de extração por IA verificadas, 19 testes passaram.

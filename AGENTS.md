@@ -19,3 +19,6 @@
 - Run document analysis only on explicit user action through authenticated server functions, with streamed Lovable AI calls and no automatic retries after terminal failures.
 - Store custom categories per owner and validate category selections on the server; AI category labels remain suggestions until a review is confirmed.
 - Derive report totals and chart series from the same filtered expense rows using integer cents, excluding cancelled expenses so every report surface agrees.
+
+- Uploads offer an explicit AI-reading selection before sending and open the uploaded document review afterward; financial records still require separate confirmation.
+- Manual document reviews retain a manual source marker and use the same owner-locked confirmation as AI reviews, without creating AI extraction data.
