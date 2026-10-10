@@ -18,6 +18,7 @@ export function isDocumentDate(value: string) {
   return Number.isFinite(d.getTime()) && d.toISOString().slice(0,10) === value;
 }
 export const reviewSchema = z.object({
+  source:z.enum(['manual','ai']).optional(),
   document_type:z.string().trim().min(1).max(150),kind:z.enum(['expense','statement','payment','other']),
   issuer:z.string().max(500),document_date:date,due_date:date,
   total_amount:z.number().min(0).max(999999999999.99).nullable(),currency:z.string().max(10),
