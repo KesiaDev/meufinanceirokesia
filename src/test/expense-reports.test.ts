@@ -12,10 +12,10 @@ describe('Relatórios de despesas',()=>{
   it('filtra despesas por ano',()=>expect(expenseReport(rows,{year:'2025',month:'',category:''}).total).toBe(300));
   it('filtra despesas por mês',()=>expect(expenseReport(rows,{year:'2026',month:'11',category:''}).total).toBe(80));
   it('filtra categorias próprias',()=>expect(expenseReport(rows,{year:'2026',month:'10',category:'Escola'}).total).toBe(120));
-  it('exclui despesas canceladas',()=>expect(expenseReport([rows[3]],{year:'2026',month:'',category:''}).rows).toHaveLength(0));
+  it('exclui despesas canceladas',()=>expect(expenseReport(rows.filter(r=>r.payment_status==='Cancelado'),{year:'2026',month:'',category:''}).rows).toHaveLength(0));
   it('mantém valores do gráfico iguais ao relatório',()=>{
     const report=expenseReport(rows,{year:'2026',month:'',category:''});
-    expect(report.total).toBe(200.3);expect(report.monthly[9].total).toBe(120.3);expect(report.monthly[10].total).toBe(80);
+    expect(report.total).toBe(200.3);expect(report.monthly[9]?.total).toBe(120.3);expect(report.monthly[10]?.total).toBe(80);
     expect(report.categories.find(c=>c.name==='Sem categoria')?.total).toBe(0.3);
   });
 });
