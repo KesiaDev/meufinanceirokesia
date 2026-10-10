@@ -5,7 +5,7 @@
 - [x] Fase 2: leitura real de imagem e PDF por IA, revisão editável, correções persistidas e confirmação opcional de despesa pendente. Verificados envio, leitura, recarga, confirmação repetida sem duplicação, pagamento zerado e ausência de rateio automático; conta e arquivos de teste removidos.
 
 ## Fase 3
-- [ ] Categorias próprias antes da leitura, classificação confirmada e relatórios por mês, ano e categoria com gráfico; verificar persistência e totais.
+- [x] Categorias próprias antes da leitura, classificação confirmada e relatórios por mês, ano e categoria com gráfico. Verificados envio e leitura real, categoria preservada na confirmação, filtros, gráfico e recarga; 18 testes passaram e conta/arquivos temporários removidos.
 
 ## Etapas futuras (fora da entrega atual)
 - Classificação de despesas da Rebeca e da casa.
