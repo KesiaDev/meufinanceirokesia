@@ -17,3 +17,5 @@
 - Use shared semantic design tokens and reusable finance components so desktop and mobile surfaces stay consistent.
 - Keep AI suggestions separate from reviewed metadata, and confirm document reviews through an owner-scoped, row-locked database function so expense creation is atomic and repeat clicks cannot duplicate it.
 - Run document analysis only on explicit user action through authenticated server functions, with streamed Lovable AI calls and no automatic retries after terminal failures.
+- Store custom categories per owner and validate category selections on the server; AI category labels remain suggestions until a review is confirmed.
+- Derive report totals and chart series from the same filtered expense rows using integer cents, excluding cancelled expenses so every report surface agrees.
