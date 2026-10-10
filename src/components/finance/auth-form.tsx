@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable';
 import { Brand } from './brand';
-import documentsArt from '@/assets/documents.jpg';
+import documentsArt from '@/assets/floral-documents.jpg';
 
 export function AuthForm({ recovery = false }: { recovery?: boolean }) {
  const navigate = useNavigate();
