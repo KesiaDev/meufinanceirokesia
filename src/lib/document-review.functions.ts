@@ -6,7 +6,7 @@ import { reviewSchema, canCreateExpense } from './document-review';
 import { validateDocument } from './finance';
 
 export const analyzeDocument = createServerFn({method:'POST'}).middleware([requireSupabaseAuth])
-  .inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input))
+  .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),category:z.string().trim().max(100).optional()}).parse(input))
   .handler(async({data,context})=>{
     const {supabase,userId}=context;
     const {data:doc,error}=await supabase.from('documents').select('*').eq('id',data.id).eq('user_id',userId).single();
@@ -17,7 +17,12 @@ export const analyzeDocument = createServerFn({method:'POST'}).middleware([requi
       return {ok:false as const,error:'Este documento já está em leitura. Aguarde e atualize a lista.'};
     const key=process.env['LOVABLE_API_KEY'];
     if(!key)return {ok:false as const,error:'A leitura por IA precisa de configuração.'};
-    const {data:locked,error:lockError}=await supabase.from('documents').update({processing_status:'processing',processing_error:null,ai_error_status:null})
+    const {data:categories,error:categoryError}=await supabase.from('expense_categories').select('name').eq('user_id',userId);
+    if(categoryError)return {ok:false as const,error:'Não foi possível carregar suas categorias.'};
+    const categoryNames=categories.map(c=>c.name);
+    const category=data.category??doc.preferred_category??'';
+    if(category&&!categoryNames.includes(category))return {ok:false as const,error:'Selecione uma categoria da sua conta.'};
+    const {data:locked,error:lockError}=await supabase.from('documents').update({processing_status:'processing',processing_error:null,ai_error_status:null,preferred_category:category||null})
       .eq('id',doc.id).eq('user_id',userId).eq('updated_at',doc.updated_at).select('id').maybeSingle();
     if(lockError||!locked)return {ok:false as const,error:'O documento mudou. Atualize a lista antes de continuar.'};
     try {
@@ -25,7 +30,7 @@ export const analyzeDocument = createServerFn({method:'POST'}).middleware([requi
       if(downloadError||!file)throw new Error('Não foi possível ler o original guardado.');
       const invalid=validateDocument({size:file.size,type:doc.mime_type});if(invalid)throw new Error(invalid);
       const {extractDocument}=await import('./document-ai.server');
-      const extraction=await extractDocument(file,doc.original_filename,doc.mime_type,key,getRequest().signal);
+      const extraction=await extractDocument(file,doc.original_filename,doc.mime_type,key,getRequest().signal,categoryNames,category);
       const {error:saveError}=await supabase.from('documents').update({ai_extraction:extraction,extracted_text:extraction.extracted_text,extraction_confidence:extraction.confidence,processing_status:'review',processing_error:null,ai_error_status:null}).eq('id',doc.id).eq('user_id',userId);
       if(saveError)throw new Error('A leitura terminou, mas não foi possível guardar os dados.');
       return {ok:true as const};

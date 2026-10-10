@@ -36,6 +36,13 @@
       "when": 1791573457286,
       "tag": "0004_preserve_confirmed_document_review",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791643338617,
+      "tag": "0005_custom_categories_and_reports",
+      "breakpoints": true
     }
   ]
 }

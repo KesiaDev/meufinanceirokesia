@@ -74,6 +74,7 @@ export type Database = {
           mime_type: string
           notes: string
           original_filename: string
+          preferred_category: string | null
           processing_error: string | null
           processing_status: string
           reviewed_at: string | null
@@ -100,6 +101,7 @@ export type Database = {
           mime_type: string
           notes?: string
           original_filename: string
+          preferred_category?: string | null
           processing_error?: string | null
           processing_status?: string
           reviewed_at?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           mime_type?: string
           notes?: string
           original_filename?: string
+          preferred_category?: string | null
           processing_error?: string | null
           processing_status?: string
           reviewed_at?: string | null
@@ -144,6 +147,35 @@ export type Database = {
           },
           {
             foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_categories_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
