@@ -50,6 +50,13 @@
       "when": 1791644832222,
       "tag": "0006_manual_document_review",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791660728708,
+      "tag": "0007_register_reviewed_document_expenses",
+      "breakpoints": true
     }
   ]
 }
