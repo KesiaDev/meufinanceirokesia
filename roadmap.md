@@ -14,3 +14,5 @@
 
 ## Verificação pendente
 - Entrega de e-mail de cadastro e recuperação em caixa real e entrada com Google dependem da confirmação do usuário no serviço externo; os métodos estão ativados e a atualização via sessão real de recuperação foi testada.
+## Correção do envio de fotos
+- [ ] Envio com opção explícita de leitura por IA, categoria antes da leitura e abertura imediata da revisão; conferir descrição, data e valor.
