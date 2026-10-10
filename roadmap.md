@@ -4,10 +4,13 @@
 
 - [x] Fase 2: leitura real de imagem e PDF por IA, revisão editável, correções persistidas e confirmação opcional de despesa pendente. Verificados envio, leitura, recarga, confirmação repetida sem duplicação, pagamento zerado e ausência de rateio automático; conta e arquivos de teste removidos.
 
+## Fase 3
+- [ ] Categorias próprias antes da leitura, classificação confirmada e relatórios por mês, ano e categoria com gráfico; verificar persistência e totais.
+
 ## Etapas futuras (fora da entrega atual)
-- Fase 3: categorias e registro de despesas da Rebeca e da casa.
+- Classificação de despesas da Rebeca e da casa.
 - Fase 4: pagamentos e cartões sem duplicação.
-- Fase 5: relatórios e exportações.
+- Fase 5: exportações.
 
 ## Verificação pendente
 - Entrega de e-mail de cadastro e recuperação em caixa real e entrada com Google dependem da confirmação do usuário no serviço externo; os métodos estão ativados e a atualização via sessão real de recuperação foi testada.
