@@ -1,2 +1,2 @@
-import { ChartNoAxesCombined } from 'lucide-react';
-export function Brand() { return <div className="brand"><div className="brand-mark"><ChartNoAxesCombined size={23}/></div><div><div className="brand-title">Meu Financeiro <span>IA</span></div><div className="brand-subtitle">Sua vida financeira, em ordem.</div></div></div>; }
+import { Flower2 } from 'lucide-react';
+export function Brand() { return <div className="brand"><div className="brand-mark"><Flower2 size={25}/></div><div><div className="brand-title">Meu Financeiro <span>IA</span></div><div className="brand-subtitle">Sua vida financeira, em ordem.</div></div></div>; }
