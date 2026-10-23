@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { allocation, UNCLASSIFIED } from './beneficiary';
-import { isDocumentDate } from './document-review';
-import { expenseEditSchema, paidAmountFor } from './expense-edit';
+import { allocation, beneficiaryInput, UNCLASSIFIED } from './beneficiary';
+import { isDocumentDate, reviewSchema } from './document-review';
+import { expenseEditSchema, paidAmountFor, PAYMENT_STATUSES, type PaymentStatus } from './expense-edit';
 
 export const updateExpense = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), expense: expenseEditSchema }).parse(input))
@@ -81,4 +81,37 @@ export const renameCategory = createServerFn({ method: 'POST' }).middleware([req
     if (moveError) return { ok: false as const, error: 'A categoria nova foi criada, mas as despesas não foram movidas.' };
     if (!sameIgnoringCase) await supabase.from('expense_categories').delete().eq('id', data.id).eq('user_id', userId);
     return { ok: true as const };
+  });
+
+export const updateReviewedDocument = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), review: reviewSchema, beneficiary: beneficiaryInput.nullable() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context; const r = data.review; const category = r.category?.trim() || null;
+    const { data: doc, error } = await supabase.from('documents').select('id,confirmed_expense_id,reviewed_at').eq('id', data.id).eq('user_id', userId).maybeSingle();
+    if (error || !doc) return { ok: false as const, error: 'Documento não encontrado.' };
+    if (!doc.reviewed_at) return { ok: false as const, error: 'Confirme a revisão antes de editar.' };
+    if (category) {
+      const { data: found, error: categoryError } = await supabase.from('expense_categories').select('id').eq('user_id', userId).eq('name', category).maybeSingle();
+      if (categoryError || !found) return { ok: false as const, error: 'Selecione uma categoria da sua conta.' };
+    }
+    const { data: expense } = doc.confirmed_expense_id ? await supabase.from('expenses').select('*').eq('id', doc.confirmed_expense_id).eq('user_id', userId).maybeSingle() : { data: null };
+    if (expense) {
+      if (r.kind !== 'expense') return { ok: false as const, error: 'Esta nota tem uma despesa registrada. Para mudar o tipo, exclua a despesa em Despesas.' };
+      if (r.total_amount === null || !r.document_date || !r.description.trim()) return { ok: false as const, error: 'Preencha descrição, data e valor.' };
+    }
+    const { error: docError } = await supabase.from('documents').update({
+      document_type: r.document_type, issuer: r.issuer || null, document_date: r.document_date || null, due_date: r.due_date || null,
+      total_amount: r.total_amount, notes: r.notes, preferred_category: category, reviewed_data: { ...r, category: category ?? '' },
+    }).eq('id', doc.id).eq('user_id', userId);
+    if (docError) return { ok: false as const, error: 'Não foi possível salvar o documento.' };
+    if (!expense) return { ok: true as const };
+    const total = r.total_amount as number;
+    const status = (PAYMENT_STATUSES as readonly string[]).includes(expense.payment_status) ? expense.payment_status as PaymentStatus : 'Pendente';
+    const split = data.beneficiary ? allocation(data.beneficiary.type, total, data.beneficiary.percentage)
+      : { beneficiary_type: UNCLASSIFIED, allocation_percentage: null, allocated_amount: null, allocation_method: null };
+    const { error: expenseError } = await supabase.from('expenses').update({
+      description: r.description.trim(), expense_date: r.document_date, due_date: r.due_date || null, total_amount: total, category,
+      paid_amount: paidAmountFor(status, total, Math.min(Number(expense.paid_amount), total)), ...split,
+    }).eq('id', expense.id).eq('user_id', userId);
+    return expenseError ? { ok: false as const, error: 'O documento foi salvo, mas a despesa não foi atualizada.' } : { ok: true as const };
   });
