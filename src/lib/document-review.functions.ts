@@ -52,7 +52,8 @@ export const confirmDocument = createServerFn({method:'POST'}).middleware([requi
     if(expenseId&&data.beneficiary){
       const {data:expense}=await context.supabase.from('expenses').select('total_amount').eq('id',expenseId).eq('user_id',context.userId).maybeSingle();
       // Only classify a still-unclassified expense, so a repeated confirmation never overwrites a later choice.
-      if(expense)await context.supabase.from('expenses').update(allocation(data.beneficiary.type,Number(expense.total_amount),data.beneficiary.percentage)).eq('id',expenseId).eq('user_id',context.userId).eq('beneficiary_type',UNCLASSIFIED);
+      const classified=expense&&await context.supabase.from('expenses').update(allocation(data.beneficiary.type,Number(expense.total_amount),data.beneficiary.percentage)).eq('id',expenseId).eq('user_id',context.userId).eq('beneficiary_type',UNCLASSIFIED);
+      if(!classified||classified.error)return {ok:false as const,error:'A despesa foi registrada, mas não foi possível marcar para quem é. Ajuste em Despesas.'};
     }
     return {ok:true as const};
   });
