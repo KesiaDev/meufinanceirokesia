@@ -36,3 +36,6 @@ export function canCreateExpense(review: DocumentReview, originalKind?: string) 
   return review.kind==='expense' && !['statement','payment'].includes(originalKind??'') && review.currency==='BRL' &&
     review.total_amount!==null && review.total_amount>=0 && isDocumentDate(review.document_date) && Boolean(review.description.trim());
 }
+export function shouldRegisterExpense(review: DocumentReview, originalKind?: string, linkedExpenseId?: string | null) {
+  return !linkedExpenseId && canCreateExpense(review, originalKind);
+}

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { validateDocument, financialTotals } from '@/lib/finance';
 describe('Integridade financeira', () => {
+  it('soma as três notas revisadas em R$ 119,17', () => {
+    const rows=[39.98,12.19,67].map(total_amount=>({total_amount,paid_amount:0,payment_status:'Pendente',beneficiary_type:'Pendente de classificação',allocated_amount:null}));
+    expect(financialTotals(rows).total).toBe(119.17);
+    expect(financialTotals(rows).paid).toBe(0);
+  });
   it('não contabiliza boleto pendente como pago', () => {
     expect(financialTotals([{ total_amount: 500, paid_amount: 500, payment_status: 'Pendente', beneficiary_type: 'Pessoal', allocated_amount: null }]).paid).toBe(0);
   });

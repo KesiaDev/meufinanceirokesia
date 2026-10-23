@@ -19,4 +19,4 @@
 - [x] Fotografar e preencher descrição, data e valor manualmente, sem leitura por IA, com confirmação segura da despesa; persistência após recarga e ausência de extração por IA verificadas, 19 testes passaram.
 
 ## Correção dos totais das notas
-- [ ] Corrigir confirmação das notas para registrar despesas explicitamente e permitir incluir notas já revisadas, sem duplicação; verificar totais após recarga.
+- [x] Confirmação registra despesas por padrão, com opção de apenas guardar a revisão; notas já revisadas podem ser incluídas sem duplicação. Três notas reais somam R$ 119,17 após recarga, pagamentos permanecem pendentes; 23 testes passaram.
