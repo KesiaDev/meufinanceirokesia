@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { reviewSchema, canCreateExpense } from './document-review';
+import { reviewSchema, canCreateExpense, isDocumentDate } from './document-review';
 import { validateDocument } from './finance';
 import { allocation, beneficiaryInput, UNCLASSIFIED } from './beneficiary';
 
@@ -44,16 +44,18 @@ export const analyzeDocument = createServerFn({method:'POST'}).middleware([requi
   });
 
 export const confirmDocument = createServerFn({method:'POST'}).middleware([requireSupabaseAuth])
-  .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),review:reviewSchema,createExpense:z.boolean(),beneficiary:beneficiaryInput.optional()}).parse(input))
+  .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),review:reviewSchema,createExpense:z.boolean(),beneficiary:beneficiaryInput.optional(),expenseDate:z.string().refine(isDocumentDate,'Data da despesa inválida.').optional()}).parse(input))
   .handler(async({data,context})=>{
     if(data.createExpense&&!canCreateExpense(data.review))return {ok:false as const,error:'Preencha descrição, data e valor em reais para registrar a despesa.'};
     const {data:expenseId,error}=await context.supabase.rpc('confirm_document_review',{p_document_id:data.id,p_review:data.review,p_create_expense:data.createExpense});
     if(error)return {ok:false as const,error:'Não foi possível confirmar. Verifique os campos e atualize o documento.'};
-    if(expenseId&&data.beneficiary){
+    if(expenseId&&(data.beneficiary||data.expenseDate)){
       const {data:expense}=await context.supabase.from('expenses').select('total_amount').eq('id',expenseId).eq('user_id',context.userId).maybeSingle();
-      // Only classify a still-unclassified expense, so a repeated confirmation never overwrites a later choice.
-      const classified=expense&&await context.supabase.from('expenses').update(allocation(data.beneficiary.type,Number(expense.total_amount),data.beneficiary.percentage)).eq('id',expenseId).eq('user_id',context.userId).eq('beneficiary_type',UNCLASSIFIED);
-      if(!classified||classified.error)return {ok:false as const,error:'A despesa foi registrada, mas não foi possível marcar para quem é. Ajuste em Despesas.'};
+      // The RPC dates the expense by the document; it counts in the month chosen here instead (today by default).
+      // Only touch a still-unclassified expense, so a repeated confirmation never overwrites a later choice.
+      const changes={...(data.beneficiary&&expense?allocation(data.beneficiary.type,Number(expense.total_amount),data.beneficiary.percentage):{}),...(data.expenseDate?{expense_date:data.expenseDate}:{})};
+      const classified=expense&&await context.supabase.from('expenses').update(changes).eq('id',expenseId).eq('user_id',context.userId).eq('beneficiary_type',UNCLASSIFIED);
+      if(!classified||classified.error)return {ok:false as const,error:'A despesa foi registrada, mas não foi possível ajustar para quem é e o mês. Ajuste em Despesas.'};
     }
     return {ok:true as const};
   });

@@ -39,7 +39,7 @@ export function ExpenseEditDialog({ expense, categories, onClose }: { expense: T
       <div className="field mt-0"><label htmlFor="edit-description">Descrição</label><input id="edit-description" value={form.description} maxLength={1000} disabled={busy} onChange={set('description')}/></div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="field mt-0"><label htmlFor="edit-amount">Valor total (R$)</label><input id="edit-amount" type="number" min="0" step="0.01" value={form.total_amount} disabled={busy} onChange={set('total_amount')}/></div>
-        <div className="field mt-0"><label htmlFor="edit-date">Data</label><input id="edit-date" type="date" value={form.expense_date} disabled={busy} onChange={set('expense_date')}/></div>
+        <div className="field mt-0"><label htmlFor="edit-date">Mês da despesa</label><input id="edit-date" type="date" value={form.expense_date} disabled={busy} onChange={set('expense_date')}/></div>
         <div className="field mt-0"><label htmlFor="edit-category">Categoria</label><select id="edit-category" className="filter-select" value={form.category} disabled={busy} onChange={set('category')}><option value="">Sem categoria</option>{form.category && !categories.some(c => c.name === form.category) && <option>{form.category}</option>}{categories.map(c => <option key={c.id}>{c.name}</option>)}</select></div>
         <div className="field mt-0"><label htmlFor="edit-due">Vencimento</label><input id="edit-due" type="date" value={form.due_date} disabled={busy} onChange={set('due_date')}/></div>
       </div>
