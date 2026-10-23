@@ -22,3 +22,4 @@
 
 - Uploads offer an explicit AI-reading selection before sending and open the uploaded document review afterward; financial records still require separate confirmation.
 - Manual document reviews retain a manual source marker and use the same owner-locked confirmation as AI reviews, without creating AI extraction data.
+- Reviewed documents without a linked expense can explicitly register their saved review through the same row-locked function; existing links remain idempotent to prevent duplicate totals.

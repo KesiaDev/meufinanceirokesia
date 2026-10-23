@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { analyzeDocument, confirmDocument } from '@/lib/document-review.functions';
-import { extractionSchema, reviewSchema, canCreateExpense, type DocumentReview } from '@/lib/document-review';
+import { extractionSchema, reviewSchema, canCreateExpense, shouldRegisterExpense, type DocumentReview } from '@/lib/document-review';
 import type { Tables } from '@/integrations/supabase/types';
 import { CategoryManager } from './category-manager';
 
@@ -14,9 +14,9 @@ export function DocumentReviewDialog({doc,categories,onClose,onPreview}:{doc:Tab
  const analyze=useServerFn(analyzeDocument);const confirm=useServerFn(confirmDocument);const query=useQueryClient();
  const parsed=extractionSchema.safeParse(doc.ai_extraction);const ai=parsed.success?parsed.data:null;
  const saved=reviewSchema.safeParse(doc.reviewed_data);
- const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [createExpense,setCreateExpense]=useState(false);const [manual,setManual]=useState(saved.success&&saved.data.source==='manual');
+ const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [createExpense,setCreateExpense]=useState(true);const [manual,setManual]=useState(saved.success&&saved.data.source==='manual');
  const [review,setReview]=useState<DocumentReview>(saved.success?saved.data:{document_type:doc.reviewed_at?doc.document_type:ai?.document_type??doc.document_type,kind:ai?.kind??'other',issuer:doc.reviewed_at?doc.issuer??'':ai?.issuer??'',document_date:doc.reviewed_at?doc.document_date??'':ai?.document_date??'',due_date:doc.reviewed_at?doc.due_date??'':ai?.due_date??'',total_amount:doc.reviewed_at?doc.total_amount:ai?.total_amount??null,currency:ai?.currency??'',description:ai?.description??'',notes:doc.notes});
- const completed=Boolean(doc.reviewed_at);const eligible=canCreateExpense(review,ai?.kind);
+ const completed=Boolean(doc.reviewed_at);const eligible=canCreateExpense(review,ai?.kind);const canRegister=shouldRegisterExpense(review,ai?.kind,doc.confirmed_expense_id);
   const [category,setCategory]=useState(saved.success?saved.data.category??'':doc.preferred_category??(categories.some(c=>c.name===ai?.suggested_category)?ai?.suggested_category??'':''));
   async function read(){setBusy(true);setError('');try{const result=await analyze({data:{id:doc.id,category}});if(!result.ok)setError(result.error);await query.invalidateQueries({queryKey:['workspace']});}catch{setError('Não foi possível concluir a leitura. Atualize a lista para conferir o estado do documento.');}finally{setBusy(false);}}
    async function save(){setBusy(true);setError('');try{const result=await confirm({data:{id:doc.id,review:{...review,category,source:manual?'manual':'ai'},createExpense:createExpense&&eligible}});if(!result.ok){setError(result.error);return;}await query.invalidateQueries({queryKey:['workspace']});toast.success(createExpense&&eligible?'Documento revisado e despesa registrada como pendente.':'Revisão guardada.');onClose();}catch{setError('Não foi possível guardar a revisão. Confira os campos preenchidos.');}finally{setBusy(false);}}
@@ -31,5 +31,7 @@ export function DocumentReviewDialog({doc,categories,onClose,onPreview}:{doc:Tab
  <div className="field mt-0"><label htmlFor="review-notes">Observações</label><textarea id="review-notes" value={review.notes} disabled={completed||busy} onChange={e=>setReview({...review,notes:e.target.value})}/></div>
   {ai&&<details className="border-t border-border pt-3 text-xs"><summary className="cursor-pointer font-semibold">Texto e detalhes extraídos</summary><div className="mt-3 space-y-2 text-muted-foreground"><p>Número: {ai.document_number??'Não identificado'} · Forma de pagamento: {ai.payment_method??'Não identificada'}</p><p>Beneficiário: {ai.beneficiary??'Não identificado'} · Categoria sugerida: {ai.suggested_category??'Não identificada'}</p>{ai.items.map((item,i)=><p key={i}>{item.description} · Quantidade: {item.quantity??'—'} · Valor unitário: {item.unit_amount??'—'} · Total: {item.total_amount??'—'}</p>)}<pre className="whitespace-pre-wrap break-words font-sans max-h-64 overflow-auto">{ai.extracted_text||'Nenhum texto legível.'}</pre></div></details>}
   {!completed&&<><label className="flex gap-3 items-start text-sm border-t border-border pt-4"><input type="checkbox" className="mt-1 accent-primary" checked={createExpense&&eligible} disabled={!eligible||busy} onChange={e=>setCreateExpense(e.target.checked)}/><span>Registrar também uma despesa pendente{!eligible&&<span className="block text-xs text-muted-foreground mt-1">{['statement','payment'].includes(ai?.kind??review.kind)?'Faturas e comprovantes permanecem como documentos, sem duplicar compras.':'Preencha descrição, data de emissão e valor em BRL.'}</span>}</span></label><p className="text-xs text-muted-foreground">Nenhum pagamento ou rateio da Rebeca será confirmado automaticamente.</p>{error&&<p role="alert" className="inline-error">{error}</p>}<Button disabled={busy} onClick={save}>{busy?<LoaderCircle className="animate-spin"/>:<Check/>}{busy?'Guardando…':'Confirmar revisão'}</Button></>}
- </> }</DialogContent></Dialog>;
+  {completed&&canRegister&&<>{error&&<p role="alert" className="inline-error">{error}</p>}<Button disabled={busy} onClick={save}>{busy?<LoaderCircle className="animate-spin"/>:<Check/>}{busy?'Registrando…':'Registrar despesa'}</Button></>}
+  {completed&&doc.confirmed_expense_id&&<p className="text-sm text-success">Despesa registrada.</p>}
+  </> }</DialogContent></Dialog>;
 }

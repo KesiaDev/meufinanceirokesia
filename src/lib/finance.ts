@@ -11,9 +11,9 @@ export const dateLabel = (value: string) => new Intl.DateTimeFormat('pt-BR', { t
 export function financialTotals(expenses: { total_amount: number; paid_amount: number; payment_status: string; beneficiary_type: string; allocated_amount: number | null }[]) {
   const active = expenses.filter(e => e.payment_status !== 'Cancelado');
   return {
-    total: active.reduce((sum, e) => sum + Number(e.total_amount), 0),
-    paid: active.filter(e => ['Pago', 'Parcialmente pago'].includes(e.payment_status)).reduce((sum, e) => sum + Number(e.paid_amount), 0),
-    rebeca: active.reduce((sum, e) => sum + (e.beneficiary_type === 'Direta da Rebeca' ? Number(e.total_amount) : e.beneficiary_type === 'Compartilhada' ? Number(e.allocated_amount ?? 0) : 0), 0),
+    total: active.reduce((sum, e) => sum + Math.round(Number(e.total_amount) * 100), 0) / 100,
+    paid: active.filter(e => ['Pago', 'Parcialmente pago'].includes(e.payment_status)).reduce((sum, e) => sum + Math.round(Number(e.paid_amount) * 100), 0) / 100,
+    rebeca: active.reduce((sum, e) => sum + Math.round((e.beneficiary_type === 'Direta da Rebeca' ? Number(e.total_amount) : e.beneficiary_type === 'Compartilhada' ? Number(e.allocated_amount ?? 0) : 0) * 100), 0) / 100,
     pending: active.filter(e => !['Pago', 'Cancelado'].includes(e.payment_status)).length,
   };
 }
