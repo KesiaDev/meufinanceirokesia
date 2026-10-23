@@ -84,7 +84,7 @@ export const renameCategory = createServerFn({ method: 'POST' }).middleware([req
   });
 
 export const updateReviewedDocument = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), review: reviewSchema, beneficiary: beneficiaryInput.nullable(), expenseDate: z.string().refine(isDocumentDate, 'Data da despesa inválida.').optional() }).parse(input))
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid(), review: reviewSchema, beneficiary: beneficiaryInput.nullable() }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context; const r = data.review; const category = r.category?.trim() || null;
     const { data: doc, error } = await supabase.from('documents').select('id,confirmed_expense_id,reviewed_at').eq('id', data.id).eq('user_id', userId).maybeSingle();
@@ -110,7 +110,7 @@ export const updateReviewedDocument = createServerFn({ method: 'POST' }).middlew
     const split = data.beneficiary ? allocation(data.beneficiary.type, total, data.beneficiary.percentage)
       : { beneficiary_type: UNCLASSIFIED, allocation_percentage: null, allocated_amount: null, allocation_method: null };
     const { error: expenseError } = await supabase.from('expenses').update({
-      description: r.description.trim(), expense_date: data.expenseDate ?? expense.expense_date, due_date: r.due_date || null, total_amount: total, category,
+      description: r.description.trim(), expense_date: r.document_date, due_date: r.due_date || null, total_amount: total, category,
       paid_amount: paidAmountFor(status, total, Math.min(Number(expense.paid_amount), total)), ...split,
     }).eq('id', expense.id).eq('user_id', userId);
     return expenseError ? { ok: false as const, error: 'O documento foi salvo, mas a despesa não foi atualizada.' } : { ok: true as const };

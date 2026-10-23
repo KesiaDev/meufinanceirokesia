@@ -21,6 +21,3 @@ export function financialTotals(expenses: { total_amount: number; paid_amount: n
 export function pageHead(title: string, description: string) {
   return { meta: [{ title: `${title} | Meu Financeiro IA` }, { name: 'description', content: description }, { property: 'og:title', content: `${title} | Meu Financeiro IA` }, { property: 'og:description', content: description }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] };
 }
-
-/** Today in São Paulo as YYYY-MM-DD, so an expense counts in the month the user is living in. */
-export const todayISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
