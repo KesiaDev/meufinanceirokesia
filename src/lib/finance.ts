@@ -1,3 +1,4 @@
+import { rebecaShare } from './beneficiary';
 export const MAX_FILE_SIZE = 20 * 1024 * 1024;
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 export function validateDocument(file: { size: number; type: string }) {
@@ -13,7 +14,7 @@ export function financialTotals(expenses: { total_amount: number; paid_amount: n
   return {
     total: active.reduce((sum, e) => sum + Math.round(Number(e.total_amount) * 100), 0) / 100,
     paid: active.filter(e => ['Pago', 'Parcialmente pago'].includes(e.payment_status)).reduce((sum, e) => sum + Math.round(Number(e.paid_amount) * 100), 0) / 100,
-    rebeca: active.reduce((sum, e) => sum + Math.round((e.beneficiary_type === 'Direta da Rebeca' ? Number(e.total_amount) : e.beneficiary_type === 'Compartilhada' ? Number(e.allocated_amount ?? 0) : 0) * 100), 0) / 100,
+    rebeca: active.reduce((sum, e) => sum + Math.round(rebecaShare(e) * 100), 0) / 100,
     pending: active.filter(e => !['Pago', 'Cancelado'].includes(e.payment_status)).length,
   };
 }

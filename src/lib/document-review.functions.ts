@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { reviewSchema, canCreateExpense } from './document-review';
 import { validateDocument } from './finance';
+import { allocation, beneficiaryInput, UNCLASSIFIED } from './beneficiary';
 
 export const analyzeDocument = createServerFn({method:'POST'}).middleware([requireSupabaseAuth])
   .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),category:z.string().trim().max(100).optional()}).parse(input))
@@ -43,10 +44,15 @@ export const analyzeDocument = createServerFn({method:'POST'}).middleware([requi
   });
 
 export const confirmDocument = createServerFn({method:'POST'}).middleware([requireSupabaseAuth])
-  .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),review:reviewSchema,createExpense:z.boolean()}).parse(input))
+  .inputValidator((input:unknown)=>z.object({id:z.string().uuid(),review:reviewSchema,createExpense:z.boolean(),beneficiary:beneficiaryInput.optional()}).parse(input))
   .handler(async({data,context})=>{
     if(data.createExpense&&!canCreateExpense(data.review))return {ok:false as const,error:'Preencha descrição, data e valor em reais para registrar a despesa.'};
-    const {error}=await context.supabase.rpc('confirm_document_review',{p_document_id:data.id,p_review:data.review,p_create_expense:data.createExpense});
+    const {data:expenseId,error}=await context.supabase.rpc('confirm_document_review',{p_document_id:data.id,p_review:data.review,p_create_expense:data.createExpense});
     if(error)return {ok:false as const,error:'Não foi possível confirmar. Verifique os campos e atualize o documento.'};
+    if(expenseId&&data.beneficiary){
+      const {data:expense}=await context.supabase.from('expenses').select('total_amount').eq('id',expenseId).eq('user_id',context.userId).maybeSingle();
+      // Only classify a still-unclassified expense, so a repeated confirmation never overwrites a later choice.
+      if(expense)await context.supabase.from('expenses').update(allocation(data.beneficiary.type,Number(expense.total_amount),data.beneficiary.percentage)).eq('id',expenseId).eq('user_id',context.userId).eq('beneficiary_type',UNCLASSIFIED);
+    }
     return {ok:true as const};
   });

@@ -8,7 +8,7 @@
 - [x] Categorias próprias antes da leitura, classificação confirmada e relatórios por mês, ano e categoria com gráfico. Verificados envio e leitura real, categoria preservada na confirmação, filtros, gráfico e recarga; 18 testes passaram e conta/arquivos temporários removidos.
 
 ## Etapas futuras (fora da entrega atual)
-- Classificação de despesas da Rebeca e da casa.
+- [x] Classificação de despesas da Rebeca e da casa: "Para quem" (Minha, Casa, Rebeca, Dividida com a Rebeca com %) na revisão da nota e editável nas listas; categorias sugeridas (Mercado, Aluguel, Gasolina…) com um clique; parte da Rebeca calculada em centavos. Sem migration — usa colunas existentes de `expenses`; 28 testes passaram.
 - Fase 4: pagamentos e cartões sem duplicação.
 - Fase 5: exportações.
 
