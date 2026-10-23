@@ -22,4 +22,4 @@
 - [x] Confirmação registra despesas por padrão, com opção de apenas guardar a revisão; notas já revisadas podem ser incluídas sem duplicação. Três notas reais somam R$ 119,17 após recarga, pagamentos permanecem pendentes; 23 testes passaram.
 
 ## Envio sem custos de IA
-- [ ] Remover leitura por IA do envio e da revisão, abrir preenchimento manual de valor e descrição e verificar o fluxo.
+- [x] Removida leitura por IA do envio e da revisão; anexar abre preenchimento manual. Verificados valor, descrição, despesa exibida e ausência de extração por IA; arquivo de teste removido e 18 testes passaram.
