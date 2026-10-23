@@ -23,3 +23,6 @@
 
 ## Envio sem custos de IA
 - [x] Removida leitura por IA do envio e da revisão; anexar abre preenchimento manual. Verificados valor, descrição, despesa exibida e ausência de extração por IA; arquivo de teste removido e 18 testes passaram.
+
+## Editar e excluir
+- [x] Despesas: editar descrição, valor, data, vencimento, categoria, para quem e pagamento (pendente, pago, parcial com valor, cancelado); excluir com confirmação — a nota continua guardada e pode registrar a despesa de novo. Documentos: excluir o original, com opção de excluir ou manter a despesa ligada. Categorias: renomear (despesas acompanham o novo nome) e excluir (despesas ficam sem categoria). Sem migration; 34 testes passaram.

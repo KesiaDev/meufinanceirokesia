@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { useServerFn } from '@tanstack/react-start';
-import { useQueryClient } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartNoAxesCombined } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { currency, dateLabel } from '@/lib/finance';
+import { currency } from '@/lib/finance';
 import { expenseReport, UNCATEGORIZED } from '@/lib/expense-reports';
-import { classifyExpense } from '@/lib/categories.functions';
 import type { Tables } from '@/integrations/supabase/types';
 import { CategoryManager } from './category-manager';
+import { ExpenseTable } from './expense-table';
 
 export function ExpenseCharts({ report }: { report: ReturnType<typeof expenseReport> }) {
   const [mode, setMode] = useState<'monthly' | 'categories'>('monthly');
@@ -20,20 +17,15 @@ export function ExpenseCharts({ report }: { report: ReturnType<typeof expenseRep
 
 export function ExpenseReports({ expenses, categories }: { expenses: Tables<'expenses'>[]; categories: Tables<'expense_categories'>[] }) {
   const currentYear = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: 'America/Sao_Paulo' }).format(new Date());
-  const [year, setYear] = useState(currentYear); const [month, setMonth] = useState(''); const [category, setCategory] = useState(''); const [busy, setBusy] = useState<string | null>(null);
-  const classify = useServerFn(classifyExpense); const query = useQueryClient();
+  const [year, setYear] = useState(currentYear); const [month, setMonth] = useState(''); const [category, setCategory] = useState('');
   const years = [...new Set([currentYear, ...expenses.map(e => e.expense_date.slice(0,4))])].sort().reverse();
   const categoryNames = [...new Set([...categories.map(c => c.name), ...expenses.map(e => e.category || UNCATEGORIZED)])].sort();
   const report = expenseReport(expenses, { year, month, category });
-  async function changeCategory(id: string, value: string) {
-    setBusy(id); try { const result = await classify({ data: { id, category: value } }); if (!result.ok) toast.error(result.error); else await query.invalidateQueries({ queryKey: ['workspace'] }); }
-    catch { toast.error('Não foi possível classificar a despesa.'); } finally { setBusy(null); }
-  }
   return <><div className="report-filters"><label>Ano<select className="filter-select" aria-label="Ano do relatório" value={year} onChange={e => setYear(e.target.value)}>{years.map(y => <option key={y}>{y}</option>)}</select></label><label>Mês<select className="filter-select" aria-label="Mês do relatório" value={month} onChange={e => setMonth(e.target.value)}><option value="">Todos os meses</option>{['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'].map((m,i) => <option key={m} value={String(i+1).padStart(2,'0')}>{m}</option>)}</select></label><label>Categoria<select className="filter-select" aria-label="Categoria do relatório" value={category} onChange={e => setCategory(e.target.value)}><option value="">Todas as categorias</option>{categoryNames.map(c => <option key={c}>{c}</option>)}</select></label></div>
     <div className="report-total"><span>Total de despesas · {year}</span><strong>{currency(report.total)}</strong><span>{report.rows.length} registros</span></div>
     <ExpenseCharts report={report}/>
     <section className="report-summary"><h2 className="font-bold mb-4">Resumo por categoria</h2><div className="table-wrap"><table className="data-table"><thead><tr><th>CATEGORIA</th><th>DESPESAS</th><th>TOTAL</th></tr></thead><tbody>{report.categories.map(c => <tr key={c.name}><td>{c.name}</td><td>{c.count}</td><td>{currency(c.total)}</td></tr>)}</tbody></table></div></section>
-    {report.rows.length > 0 && <section className="report-summary"><h2 className="font-bold mb-4">Despesas do período</h2><div className="table-wrap"><table className="data-table"><thead><tr><th>DESCRIÇÃO</th><th>DATA</th><th>CATEGORIA</th><th>VALOR</th></tr></thead><tbody>{report.rows.map(e => <tr key={e.id}><td>{e.description}</td><td>{dateLabel(e.expense_date)}</td><td><select className="filter-select max-w-48" aria-label={`Categoria de ${e.description}`} value={e.category || ''} disabled={busy !== null} onChange={event => changeCategory(e.id,event.target.value)}><option value="">Sem categoria</option>{e.category && !categories.some(c => c.name === e.category) && <option>{e.category}</option>}{categories.map(c => <option key={c.id}>{c.name}</option>)}</select></td><td>{currency(Number(e.total_amount))}</td></tr>)}</tbody></table></div></section>}
+    {report.rows.length > 0 && <section className="report-summary"><h2 className="font-bold mb-4">Despesas do período</h2><ExpenseTable expenses={report.rows} categories={categories}/></section>}
     <CategoryManager categories={categories}/>
   </>;
 }
