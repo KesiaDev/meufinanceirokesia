@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedCalendarioRouteImport } from './routes/_authenticated/calendario'
 import { Route as AuthenticatedCasaRouteImport } from './routes/_authenticated/casa'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
@@ -41,6 +42,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCalendarioRoute = AuthenticatedCalendarioRouteImport.update({
+  id: '/calendario',
+  path: '/calendario',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCasaRoute = AuthenticatedCasaRouteImport.update({
   id: '/casa',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/calendario': typeof AuthenticatedCalendarioRoute
   '/casa': typeof AuthenticatedCasaRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/despesas': typeof AuthenticatedDespesasRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/calendario': typeof AuthenticatedCalendarioRoute
   '/casa': typeof AuthenticatedCasaRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/despesas': typeof AuthenticatedDespesasRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/calendario': typeof AuthenticatedCalendarioRoute
   '/_authenticated/casa': typeof AuthenticatedCasaRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/calendario'
     | '/casa'
     | '/configuracoes'
     | '/despesas'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/calendario'
     | '/casa'
     | '/configuracoes'
     | '/despesas'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/calendario'
     | '/_authenticated/casa'
     | '/_authenticated/configuracoes'
     | '/_authenticated/despesas'
@@ -215,6 +227,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/calendario': {
+      id: '/_authenticated/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof AuthenticatedCalendarioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/casa': {
       id: '/_authenticated/casa'
@@ -283,6 +302,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCalendarioRoute: typeof AuthenticatedCalendarioRoute
   AuthenticatedCasaRoute: typeof AuthenticatedCasaRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
@@ -295,6 +315,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCalendarioRoute: AuthenticatedCalendarioRoute,
   AuthenticatedCasaRoute: AuthenticatedCasaRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
