@@ -195,10 +195,12 @@ export type Database = {
           document_id: string | null
           due_date: string | null
           expense_date: string
+          fixed_expense_id: string | null
           id: string
           paid_amount: number
           payment_date: string | null
           payment_status: string
+          reference_month: string | null
           total_amount: number
           user_id: string
         }
@@ -213,10 +215,12 @@ export type Database = {
           document_id?: string | null
           due_date?: string | null
           expense_date: string
+          fixed_expense_id?: string | null
           id?: string
           paid_amount?: number
           payment_date?: string | null
           payment_status?: string
+          reference_month?: string | null
           total_amount: number
           user_id: string
         }
@@ -231,10 +235,12 @@ export type Database = {
           document_id?: string | null
           due_date?: string | null
           expense_date?: string
+          fixed_expense_id?: string | null
           id?: string
           paid_amount?: number
           payment_date?: string | null
           payment_status?: string
+          reference_month?: string | null
           total_amount?: number
           user_id?: string
         }
@@ -247,7 +253,58 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "expenses_fixed_expense_id_fkey"
+            columns: ["fixed_expense_id"]
+            isOneToOne: false
+            referencedRelation: "fixed_expenses"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fixed_expenses: {
+        Row: {
+          amount: number | null
+          beneficiary_type: string
+          category: string | null
+          created_at: string
+          due_day: number | null
+          id: string
+          name: string
+          user_id: string
+          variable: boolean
+        }
+        Insert: {
+          amount?: number | null
+          beneficiary_type?: string
+          category?: string | null
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          name: string
+          user_id: string
+          variable?: boolean
+        }
+        Update: {
+          amount?: number | null
+          beneficiary_type?: string
+          category?: string | null
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          name?: string
+          user_id?: string
+          variable?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fixed_expenses_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
