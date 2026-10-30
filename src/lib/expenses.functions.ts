@@ -115,3 +115,14 @@ export const updateReviewedDocument = createServerFn({ method: 'POST' }).middlew
     }).eq('id', expense.id).eq('user_id', userId);
     return expenseError ? { ok: false as const, error: 'O documento foi salvo, mas a despesa não foi atualizada.' } : { ok: true as const };
   });
+
+export const markExpensePaid = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: row } = await supabase.from('expenses').select('total_amount').eq('id', data.id).eq('user_id', userId).maybeSingle();
+    if (!row) return { ok: false as const, error: 'Despesa não encontrada.' };
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+    const { error } = await supabase.from('expenses').update({ payment_status: 'Pago', paid_amount: row.total_amount, payment_date: today }).eq('id', data.id).eq('user_id', userId);
+    return error ? { ok: false as const, error: 'Não foi possível marcar como paga.' } : { ok: true as const };
+  });
