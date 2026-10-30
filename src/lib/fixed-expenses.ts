@@ -61,10 +61,10 @@ export function launchPlan<T extends { id: string; amount: number | null; freque
  * A monthly charge with one pending row in the month (launched before its due day was set)
  * is moved instead of duplicated; everything else is inserted normally.
  */
-export function pendingMoves<E extends { id: string; fixed_expense_id: string | null; expense_date: string }>(
-  plan: { item: { id: string; frequency?: string | null }; amount: number; date: string }[],
+export function pendingMoves<I extends { id: string; frequency?: string | null }, E extends { id: string; fixed_expense_id: string | null; expense_date: string }>(
+  plan: { item: I; amount: number; date: string }[],
   pendingRows: E[],
-): { moves: { row: E; amount: number; date: string }[]; inserts: typeof plan } {
+): { moves: { row: E; amount: number; date: string }[]; inserts: { item: I; amount: number; date: string }[] } {
   const byItem = new Map<string, E[]>();
   for (const row of pendingRows) {
     if (!row.fixed_expense_id) continue;
@@ -73,10 +73,11 @@ export function pendingMoves<E extends { id: string; fixed_expense_id: string | 
     byItem.set(row.fixed_expense_id, list);
   }
   const moves: { row: E; amount: number; date: string }[] = [];
-  const inserts: typeof plan = [];
+  const inserts: { item: I; amount: number; date: string }[] = [];
   for (const entry of plan) {
     const rows = byItem.get(entry.item.id) ?? [];
-    if ((entry.item.frequency ?? 'Mensal') !== 'Semanal' && rows.length === 1 && rows[0].expense_date !== entry.date) moves.push({ row: rows[0], amount: entry.amount, date: entry.date });
+    const only = rows.length === 1 ? rows[0] : undefined;
+    if ((entry.item.frequency ?? 'Mensal') !== 'Semanal' && only && only.expense_date !== entry.date) moves.push({ row: only, amount: entry.amount, date: entry.date });
     else inserts.push(entry);
   }
   return { moves, inserts };
