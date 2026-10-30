@@ -31,3 +31,4 @@
 - [x] Contas recorrentes cadastradas (Consigaz gás, Adyl telecom, aluguel, condomínio, Claro Flex) e lançamento do mês com um clique, como pendentes, sem duplicar.
 - [x] Repetição semanal além da mensal: conta toda semana em um dia da semana (psicólogo, quarta) lança uma despesa por semana do mês; cadastro, lançamento e bloqueio de repetição verificados com conta temporária, removida depois.
 - [x] Novembro de 2026 lançado como pendente: aluguel fixo de R$ 3.300,00 no dia 10 e demais contas com valor definido, incluindo quatro quartas do psicólogo; gás e condomínio aguardam valores. Conferido na conta titular; teste de aluguel passou.
+- [x] Gás Consigaz definido em R$ 38,65 e lançado em novembro; RGE (luz) cadastrada como conta fixa sempre presente, valor zerado por enquanto. Total de novembro conferido na prévia: R$ 4.747,55.
