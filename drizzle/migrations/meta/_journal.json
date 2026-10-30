@@ -71,6 +71,13 @@
       "when": 1793367160080,
       "tag": "0009_weekly_fixed_expenses",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793370819686,
+      "tag": "0010_incomes",
+      "breakpoints": true
     }
   ]
 }

@@ -318,6 +318,41 @@ export type Database = {
           },
         ]
       }
+      incomes: {
+        Row: {
+          amount: number
+          created_at: string
+          due_day: number | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_day?: number | null
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incomes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
