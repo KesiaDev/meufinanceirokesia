@@ -136,6 +136,72 @@
 .report-chart-section { padding:20px 0; margin-bottom:25px; min-width:0; }
 .report-chart { width:100%; height:310px; min-width:0; }
 .report-summary { padding:20px 0; border-top:1px solid var(--border); }
+.income-stats { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.income-stats .stat-value { font-variant-numeric:tabular-nums; }
+.income-health { display:flex; align-items:center; gap:20px; padding:24px; margin:8px 0 34px; background:var(--success-soft); border-left:3px solid var(--success); border-radius:6px; }
+.income-health.atencao { background:var(--warning-soft); border-color:var(--warning); }
+.income-health.alerta { background:var(--petal-soft); border-color:var(--destructive); }
+.health-flower { width:52px; height:52px; display:grid; place-items:center; flex-shrink:0; border-radius:50%; background:var(--card); color:var(--success); }
+.atencao .health-flower { color:var(--warning); }
+.alerta .health-flower { color:var(--destructive); }
+.health-content { flex:1; min-width:0; }
+.health-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px; }
+.health-heading h2 { font-size:17px; font-weight:800; }
+.health-heading span { font-size:12px; color:var(--muted-foreground); }
+.health-heading strong { color:var(--foreground); font-size:15px; }
+.health-content p { margin-top:12px; font-size:12px; line-height:1.6; color:var(--muted-foreground); }
+.budget-section { margin-bottom:34px; }
+.budget-heading { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:24px; }
+.budget-eyebrow { display:block; color:var(--primary); font-size:10px; font-weight:800; margin-bottom:8px; }
+.budget-heading h2,.income-heading h2 { font-size:18px; font-weight:800; line-height:1.5; }
+.budget-heading p,.income-heading p { font-size:12px; color:var(--muted-foreground); margin-top:7px; line-height:1.6; }
+.budget-savings { display:flex; align-items:center; gap:12px; color:var(--primary); padding-left:24px; border-left:1px solid var(--border); flex-shrink:0; }
+.budget-savings span { display:block; font-size:11px; color:var(--muted-foreground); }
+.budget-savings strong { display:block; font-size:21px; margin-top:5px; font-variant-numeric:tabular-nums; }
+.budget-columns { display:flex; justify-content:space-between; padding:0 0 12px; font-size:10px; color:var(--muted-foreground); border-bottom:1px solid var(--border); }
+.budget-row { display:flex; align-items:center; gap:16px; padding:19px 0; border-bottom:1px solid var(--border); }
+.budget-icon { width:40px; height:40px; display:grid; place-items:center; flex-shrink:0; border-radius:8px; color:var(--primary); background:var(--accent); }
+.budget-icon-mercado,.budget-icon-transporte { color:var(--success); background:var(--success-soft); }
+.budget-icon-saude,.budget-icon-educacao { color:var(--lilac); background:var(--lilac-soft); }
+.budget-row-content { flex:1; min-width:0; }
+.budget-row-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:12px; }
+.budget-label { display:flex; align-items:center; gap:10px; min-width:0; }
+.budget-label h3 { font-size:13px; font-weight:700; line-height:1.5; }
+.budget-label>span { font-size:10px; font-weight:650; color:var(--muted-foreground); background:var(--muted); padding:3px 7px; border-radius:4px; flex-shrink:0; }
+.budget-values { display:flex; align-items:baseline; justify-content:flex-end; flex-wrap:wrap; gap:6px; font-size:12px; font-variant-numeric:tabular-nums; flex-shrink:0; }
+.budget-values strong { font-size:14px; font-weight:750; }
+.budget-values span { color:var(--muted-foreground); }
+.budget-bar { height:6px; border-radius:6px; overflow:hidden; background:var(--muted); }
+.budget-bar>div { height:100%; border-radius:6px; background:var(--success); }
+.budget-bar.near>div { background:var(--warning); }
+.budget-bar.over>div { background:var(--destructive); }
+.budget-over { color:var(--destructive); font-size:11px; margin-top:8px; }
+.income-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px; }
+.income-row { padding:18px 0; }
+@media (prefers-reduced-motion:no-preference) { .budget-bar>div { transition:width .35s ease; } }
+@media (max-width:760px) {
+ .income-stats { grid-template-columns:1fr; gap:10px; }
+ .income-stats .stat { display:grid; grid-template-columns:1fr auto; gap:4px 16px; }
+ .income-stats .stat-value { margin:0; font-size:23px; align-self:center; grid-column:2; grid-row:1 / 3; }
+ .income-stats .stat-icon { display:none; }
+ .income-stats .stat-caption { margin-top:4px; }
+ .income-health { padding:18px 16px; gap:12px; align-items:flex-start; }
+ .health-flower { width:36px; height:36px; }
+ .health-flower svg { width:22px; height:22px; }
+ .health-heading { align-items:flex-start; flex-direction:column; gap:5px; }
+ .health-heading h2 { font-size:16px; }
+ .budget-heading { flex-direction:column; align-items:flex-start; gap:18px; }
+ .budget-savings { border-left:0; padding-left:0; }
+ .budget-columns { font-size:9px; }
+ .budget-row { gap:12px; }
+ .budget-icon { width:34px; height:34px; }
+ .budget-row-heading { flex-direction:column; align-items:flex-start; gap:7px; }
+ .budget-label { gap:8px; }
+ .budget-values { justify-content:flex-start; }
+ .income-heading { flex-wrap:wrap; }
+ .income-row { flex-wrap:wrap; }
+ .income-row .fixed-row-info { flex-basis:calc(100% - 54px); }
+}
 .fixed-list { display:flex; flex-direction:column; }
 .fixed-row { display:flex; align-items:center; gap:14px; padding:14px 24px; border-top:1px solid var(--border); }
 .fixed-row-icon { width:36px; height:36px; border-radius:8px; background:var(--accent); color:var(--primary); display:grid; place-items:center; flex-shrink:0; }
@@ -162,5 +228,10 @@
  .two-columns { grid-template-columns:1fr; gap:18px; } .topbar-label { display:none; } .panel-title { padding:20px 18px 0; }
  .auth-page { grid-template-columns:1fr; } .auth-brand-side { padding:25px; min-height:100px; } .auth-brand-side>div:not(:first-child),.auth-brand-side>p { display:none; } .auth-form-side { padding:35px 25px; align-items:flex-start; } .auth-form h1 { font-size:25px; }
  .fab { bottom:86px; right:18px; } .data-table td,.data-table th { padding:13px 16px; } .footer-note { font-size:9px; }
+}
+@media (max-width:760px) {
+ .stat-grid.income-stats { grid-template-columns:1fr; }
+ .content:has(.income-stats) .page-heading>div:last-child { flex-wrap:wrap; max-width:100%; }
+ .content:has(.income-stats) .page-heading input { max-width:100%; }
 }
 @media (prefers-reduced-motion:no-preference) { .content,.auth-form { animation:appear .35s ease-out; } @keyframes appear { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } } }
