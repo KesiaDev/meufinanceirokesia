@@ -42,7 +42,7 @@ export function BillsCalendar({ expenses, month }: { expenses: Tables<'expenses'
       <div className="bill-date"><strong>{d.slice(8, 10)}</strong><span>{new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`)).replace('.', '')}</span></div>
       <div className="min-w-0 flex-1"><p className="bill-name">{e.description}</p><p className="bill-meta">{e.category ?? 'Sem categoria'}{isOpen(e) ? '' : ' · paga ✓'}</p></div>
       <span className="bill-amount">{currency(Number(e.total_amount))}</span>
-      {isOpen(e) && <Button size="sm" variant="outline" className="shrink-0" disabled={busy === e.id} onClick={() => markPaid(e.id)}><CheckCheck /><span className="max-sm:hidden">Paguei</span></Button>}
+      {isOpen(e) && <Button size="sm" variant="outline" className="shrink-0" aria-label={`Paguei ${e.description}`} title="Marcar como paga" disabled={busy === e.id} onClick={() => markPaid(e.id)}><CheckCheck /><span className="max-sm:hidden">Paguei</span></Button>}
     </li>;
   };
   const sum = (l: Tables<'expenses'>[]) => l.reduce((s, e) => s + Number(e.total_amount), 0);
