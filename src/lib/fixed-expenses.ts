@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { BENEFICIARY_VALUES } from './beneficiary';
 
-export const FREQUENCIES = ['Mensal', 'Semanal'] as const;
-export type FixedFrequency = (typeof FREQUENCIES)[number];
+export type FixedFrequency = 'Mensal' | 'Semanal';
+export const FREQUENCIES: FixedFrequency[] = ['Mensal', 'Semanal'];
 export const FREQUENCY_VALUES = FREQUENCIES as [FixedFrequency, ...FixedFrequency[]];
 export const WEEKDAYS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
@@ -30,7 +30,7 @@ export function fixedExpenseDate(month: string, dueDay: number | null) {
 }
 
 /** Every charge date of a fixed expense in a month (YYYY-MM): one per week for weekly ones, otherwise the due day. */
-export function fixedExpenseDates(month: string, item: { frequency?: FixedFrequency | null; weekday?: number | null; due_day?: number | null }) {
+export function fixedExpenseDates(month: string, item: { frequency?: string | null; weekday?: number | null; due_day?: number | null }) {
   if (item.frequency !== 'Semanal') return [fixedExpenseDate(month, item.due_day ?? null)];
   const [y = 0, m = 1] = month.split('-').map(Number);
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
@@ -43,7 +43,7 @@ export function fixedExpenseDates(month: string, item: { frequency?: FixedFreque
 export const launchedKey = (id: string, date: string) => `${id}|${date}`;
 
 /** Which charges can still be launched: known amount and not yet launched on that date this month. */
-export function launchPlan<T extends { id: string; amount: number | null; frequency?: FixedFrequency | null; weekday?: number | null; due_day?: number | null }>(
+export function launchPlan<T extends { id: string; amount: number | null; frequency?: string | null; weekday?: number | null; due_day?: number | null }>(
   month: string, items: T[], launchedKeys: string[], amounts: Record<string, number | null | undefined>,
 ) {
   return items.flatMap(item => {
