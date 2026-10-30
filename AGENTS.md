@@ -23,3 +23,4 @@
 - Uploads only archive originals and open manual entry afterward; upload and review controls must not invoke AI analysis, and financial records still require separate confirmation.
 - Manual document reviews retain a manual source marker and use the same owner-locked confirmation as AI reviews, without creating AI extraction data.
 - Reviewed documents without a linked expense can explicitly register their saved review through the same row-locked function; existing links remain idempotent to prevent duplicate totals.
+- Fixed expenses carry their own repetition (monthly or weekly weekday), and launching a month creates one pending expense per occurrence; the owner-scoped unique index on (fixed_expense_id, reference_month, expense_date) keeps repeat clicks from duplicating a date.

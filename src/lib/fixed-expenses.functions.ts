@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { allocation } from './beneficiary';
-import { fixedExpenseDate, fixedExpenseSchema, launchPlan } from './fixed-expenses';
+import { fixedExpenseSchema, launchedKey, launchPlan } from './fixed-expenses';
 
 export const saveFixedExpense = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => fixedExpenseSchema.parse(input))
@@ -28,15 +28,14 @@ export const launchFixedExpenses = createServerFn({ method: 'POST' }).middleware
     const { supabase, userId } = context;
     const [items, launched] = await Promise.all([
       supabase.from('fixed_expenses').select('*').eq('user_id', userId),
-      supabase.from('expenses').select('fixed_expense_id').eq('user_id', userId).eq('reference_month', data.month).not('fixed_expense_id', 'is', null),
+      supabase.from('expenses').select('fixed_expense_id, expense_date').eq('user_id', userId).eq('reference_month', data.month).not('fixed_expense_id', 'is', null),
     ]);
     if (items.error || launched.error) return { ok: false as const, error: 'Não foi possível carregar as despesas fixas.' };
-    const plan = launchPlan(items.data.map(i => ({ ...i, amount: i.amount == null ? null : Number(i.amount) })), launched.data.map(l => l.fixed_expense_id!), data.amounts);
+    const plan = launchPlan(data.month, items.data.map(i => ({ ...i, amount: i.amount == null ? null : Number(i.amount) })), launched.data.map(l => launchedKey(l.fixed_expense_id!, l.expense_date)), data.amounts);
     if (!plan.length) return { ok: true as const, created: 0 };
-    const rows = plan.map(({ item, amount }) => ({
+    const rows = plan.map(({ item, amount, date }) => ({
       user_id: userId, fixed_expense_id: item.id, reference_month: data.month, description: item.name, category: item.category,
-      expense_date: fixedExpenseDate(data.month, item.due_day), due_date: item.due_day ? fixedExpenseDate(data.month, item.due_day) : null,
-      total_amount: amount, payment_status: 'Pendente', paid_amount: 0,
+      expense_date: date, due_date: date, total_amount: amount, payment_status: 'Pendente', paid_amount: 0,
       ...allocation(item.beneficiary_type as Parameters<typeof allocation>[0], amount, 50),
     }));
     const { error } = await supabase.from('expenses').insert(rows);

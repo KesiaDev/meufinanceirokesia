@@ -64,6 +64,13 @@
       "when": 1793366275304,
       "tag": "0008_fixed_expenses",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793367160080,
+      "tag": "0009_weekly_fixed_expenses",
+      "breakpoints": true
     }
   ]
 }

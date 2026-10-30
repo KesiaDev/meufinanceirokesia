@@ -275,10 +275,12 @@ export type Database = {
           category: string | null
           created_at: string
           due_day: number | null
+          frequency: string
           id: string
           name: string
           user_id: string
           variable: boolean
+          weekday: number | null
         }
         Insert: {
           amount?: number | null
@@ -286,10 +288,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           due_day?: number | null
+          frequency?: string
           id?: string
           name: string
           user_id: string
           variable?: boolean
+          weekday?: number | null
         }
         Update: {
           amount?: number | null
@@ -297,10 +301,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           due_day?: number | null
+          frequency?: string
           id?: string
           name?: string
           user_id?: string
           variable?: boolean
+          weekday?: number | null
         }
         Relationships: [
           {
