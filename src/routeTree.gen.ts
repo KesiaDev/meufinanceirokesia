@@ -18,6 +18,7 @@ import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authen
 import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
 import { Route as AuthenticatedFixasRouteImport } from './routes/_authenticated/fixas'
+import { Route as AuthenticatedGanhosRouteImport } from './routes/_authenticated/ganhos'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedRebecaRouteImport } from './routes/_authenticated/rebeca'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
@@ -67,6 +68,11 @@ const AuthenticatedFixasRoute = AuthenticatedFixasRouteImport.update({
   path: '/fixas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGanhosRoute = AuthenticatedGanhosRouteImport.update({
+  id: '/ganhos',
+  path: '/ganhos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/despesas': typeof AuthenticatedDespesasRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/fixas': typeof AuthenticatedFixasRoute
+  '/ganhos': typeof AuthenticatedGanhosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/rebeca': typeof AuthenticatedRebecaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/despesas': typeof AuthenticatedDespesasRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/fixas': typeof AuthenticatedFixasRoute
+  '/ganhos': typeof AuthenticatedGanhosRoute
   '/painel': typeof AuthenticatedPainelRoute
   '/rebeca': typeof AuthenticatedRebecaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
   '/_authenticated/fixas': typeof AuthenticatedFixasRoute
+  '/_authenticated/ganhos': typeof AuthenticatedGanhosRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/rebeca': typeof AuthenticatedRebecaRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/documentos'
     | '/fixas'
+    | '/ganhos'
     | '/painel'
     | '/rebeca'
     | '/relatorios'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/despesas'
     | '/documentos'
     | '/fixas'
+    | '/ganhos'
     | '/painel'
     | '/rebeca'
     | '/relatorios'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/_authenticated/despesas'
     | '/_authenticated/documentos'
     | '/_authenticated/fixas'
+    | '/_authenticated/ganhos'
     | '/_authenticated/painel'
     | '/_authenticated/rebeca'
     | '/_authenticated/relatorios'
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFixasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ganhos': {
+      id: '/_authenticated/ganhos'
+      path: '/ganhos'
+      fullPath: '/ganhos'
+      preLoaderRoute: typeof AuthenticatedGanhosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/painel': {
       id: '/_authenticated/painel'
       path: '/painel'
@@ -269,6 +288,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
   AuthenticatedFixasRoute: typeof AuthenticatedFixasRoute
+  AuthenticatedGanhosRoute: typeof AuthenticatedGanhosRoute
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedRebecaRoute: typeof AuthenticatedRebecaRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
@@ -280,6 +300,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
   AuthenticatedFixasRoute: AuthenticatedFixasRoute,
+  AuthenticatedGanhosRoute: AuthenticatedGanhosRoute,
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedRebecaRoute: AuthenticatedRebecaRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
