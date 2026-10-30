@@ -55,7 +55,7 @@ export function FixedExpenses({ items, expenses, categories, month }: { items: F
       </>}
     </section>
     <section className="data-panel"><div className="panel-title mb-4"><div><h2>Minhas despesas fixas</h2><p>Edite o valor padrão, a repetição e para quem é.</p></div></div>
-      <div className="space-y-3">{items.map(i => <FixedRow key={`${i.id}-${i.amount}-${i.name}-${i.frequency}-${i.weekday}`} item={i} categories={categories}/>)}<FixedRow categories={categories}/></div>
+      <div className="space-y-3 px-6 pb-6">{items.map(i => <FixedRow key={`${i.id}-${i.amount}-${i.name}-${i.frequency}-${i.weekday}`} item={i} categories={categories}/>)}<FixedRow categories={categories}/></div>
     </section>
   </>;
 }
