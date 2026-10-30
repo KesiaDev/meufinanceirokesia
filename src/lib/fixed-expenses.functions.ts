@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { allocation } from './beneficiary';
-import { fixedExpenseSchema, launchedKey, launchPlan } from './fixed-expenses';
+import { fixedExpenseSchema, launchedKey, launchPlan, pendingMoves } from './fixed-expenses';
 
 export const saveFixedExpense = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => fixedExpenseSchema.parse(input))
