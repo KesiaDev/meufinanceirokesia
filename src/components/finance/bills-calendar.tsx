@@ -67,13 +67,13 @@ export function BillsCalendar({ expenses, month }: { expenses: Tables<'expenses'
           const items = monthItems.filter(e => dueOf(e) === d);
           const pending = items.filter(isOpen);
           const state = !items.length ? '' : pending.length ? (d < today ? 'late' : 'pending') : 'paid';
-          return <button key={d} type="button" onClick={() => setDay(d)} aria-label={`Dia ${i + 1}`}
+          return <Button variant="ghost" key={d} type="button" onClick={() => setDay(d)} aria-label={`Dia ${i + 1}`}
             className={`bill-day ${state} ${day === d ? 'selected' : ''} ${d === today ? 'today' : ''}`}>
             <span className="bill-day-num">{i + 1}</span>
             {items.length > 0 && <span className="bill-day-info">
               {pending.length ? <><b>{currency(sum(pending))}</b><small>{pending.length} {pending.length === 1 ? 'conta' : 'contas'}</small></> : <small>✓ pago</small>}
             </span>}
-          </button>;
+          </Button>;
         })}
       </div>
       <div className="bill-day-detail">
