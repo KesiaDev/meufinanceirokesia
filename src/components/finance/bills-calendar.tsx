@@ -14,7 +14,7 @@ const isOpen = (e: Tables<'expenses'>) => e.payment_status !== 'Pago' && e.payme
 
 export function BillsCalendar({ expenses, month }: { expenses: Tables<'expenses'>[]; month: string }) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
-  const [y, m] = month.split('-').map(Number);
+  const y = Number(month.slice(0, 4)), m = Number(month.slice(5, 7));
   const days = new Date(y, m, 0).getDate();
   const first = new Date(y, m - 1, 1).getDay();
   const [day, setDay] = useState<string | null>(null);
