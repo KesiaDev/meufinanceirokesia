@@ -57,6 +57,13 @@
       "when": 1791660728708,
       "tag": "0007_register_reviewed_document_expenses",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793366275304,
+      "tag": "0008_fixed_expenses",
+      "breakpoints": true
     }
   ]
 }
