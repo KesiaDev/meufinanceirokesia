@@ -14,7 +14,7 @@ export type FixedExpenseInput = z.infer<typeof fixedExpenseSchema>;
 
 /** Date of a fixed expense in a month (YYYY-MM): its due day, clamped to the month's last day, or the 1st. */
 export function fixedExpenseDate(month: string, dueDay: number | null) {
-  const [y, m] = month.split('-').map(Number);
+  const [y = 0, m = 1] = month.split('-').map(Number);
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
   const day = Math.min(dueDay ?? 1, last);
   return `${month}-${String(day).padStart(2, '0')}`;
