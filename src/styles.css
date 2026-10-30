@@ -229,4 +229,9 @@
  .auth-page { grid-template-columns:1fr; } .auth-brand-side { padding:25px; min-height:100px; } .auth-brand-side>div:not(:first-child),.auth-brand-side>p { display:none; } .auth-form-side { padding:35px 25px; align-items:flex-start; } .auth-form h1 { font-size:25px; }
  .fab { bottom:86px; right:18px; } .data-table td,.data-table th { padding:13px 16px; } .footer-note { font-size:9px; }
 }
+@media (max-width:760px) {
+ .stat-grid.income-stats { grid-template-columns:1fr; }
+ .content:has(.income-stats) .page-heading>div:last-child { flex-wrap:wrap; max-width:100%; }
+ .content:has(.income-stats) .page-heading input { max-width:100%; }
+}
 @media (prefers-reduced-motion:no-preference) { .content,.auth-form { animation:appear .35s ease-out; } @keyframes appear { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } } }
