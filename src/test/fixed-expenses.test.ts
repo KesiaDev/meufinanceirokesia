@@ -2,6 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { fixedExpenseDate, fixedExpenseDates, launchPlan } from '@/lib/fixed-expenses';
 
 describe('despesas fixas', () => {
+  it('lança o aluguel de R$ 3.300,00 no dia 10 a partir de novembro de 2026', () => {
+    const items = [{ id: 'aluguel', amount: 3300, due_day: 10 }];
+    expect(launchPlan('2026-11', items, [], {}).map(p => [p.amount, p.date])).toEqual([[3300, '2026-11-10']]);
+    expect(launchPlan('2026-12', items, [], {}).map(p => [p.amount, p.date])).toEqual([[3300, '2026-12-10']]);
+  });
   it('usa o dia de vencimento, limitado ao fim do mês', () => {
     expect(fixedExpenseDate('2026-11', 15)).toBe('2026-11-15');
     expect(fixedExpenseDate('2026-02', 31)).toBe('2026-02-28');
