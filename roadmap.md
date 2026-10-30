@@ -26,3 +26,7 @@
 
 ## Editar e excluir
 - [x] Despesas: editar descrição, valor, data, vencimento, categoria, para quem e pagamento (pendente, pago, parcial com valor, cancelado); excluir com confirmação — a nota continua guardada e pode registrar a despesa de novo. Documentos: excluir o original, com opção de excluir ou manter a despesa ligada. Categorias: renomear (despesas acompanham o novo nome) e excluir (despesas ficam sem categoria). Sem migration; 34 testes passaram.
+
+## Despesas fixas
+- [x] Contas recorrentes cadastradas (Consigaz gás, Adyl telecom, aluguel, condomínio, Claro Flex) e lançamento do mês com um clique, como pendentes, sem duplicar.
+- [x] Repetição semanal além da mensal: conta toda semana em um dia da semana (psicólogo, quarta) lança uma despesa por semana do mês; cadastro, lançamento e bloqueio de repetição verificados com conta temporária, removida depois.
