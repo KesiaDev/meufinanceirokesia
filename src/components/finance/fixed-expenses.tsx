@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { CalendarCheck, Plus, Save, Trash2 } from 'lucide-react';
+import { CalendarCheck, CheckCheck, Flower2, Plus, Repeat, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BENEFICIARIES, type BeneficiaryType } from '@/lib/beneficiary';
 import { currency } from '@/lib/finance';
@@ -28,27 +28,34 @@ export function FixedExpenses({ items, expenses, categories, month }: { items: F
   return <>
     <section className="data-panel mb-6">
       <div className="panel-title mb-4"><div><h2>Lançar no mês {month ? month.split('-').reverse().join('/') : ''}</h2><p>Preencha o valor das contas que mudam e lance todas de uma vez, como pendentes.</p></div></div>
-      {!month ? <p className="text-sm text-muted-foreground">Escolha um mês no topo da página.</p> : <>
-        <div className="space-y-2">{items.map(i => {
+      {!month ? <p className="text-sm text-muted-foreground px-6 pb-6">Escolha um mês no topo da página.</p> : <>
+        <div className="fixed-list">{items.map(i => {
           const dates = fixedExpenseDates(month, i);
           const launchedCount = dates.filter(d => done.has(launchedKey(i.id, d))).length;
           const allLaunched = launchedCount === dates.length && dates.length > 0;
-          return <div key={i.id} className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="flex-1 min-w-40 font-medium">{i.name}
-              {i.frequency === 'Semanal' && <span className="text-xs text-muted-foreground"> · {dates.length}x no mês ({WEEKDAYS[i.weekday ?? 0]})</span>}
-              {i.variable && <span className="text-xs text-muted-foreground"> · valor muda todo mês</span>}
-            </span>
-            {allLaunched ? <span className="text-success">Lançada {dates.length > 1 ? `${launchedCount}x` : ''} · {currency(Number(i.amount ?? 0))}</span> :
-              <input type="number" min="0" step="0.01" className="filter-select w-36" aria-label={`Valor de ${i.name} neste mês`} placeholder={i.amount != null ? String(i.amount) : 'Valor do mês'} value={amounts[i.id] ?? (i.variable ? '' : i.amount ?? '')} onChange={e => setAmounts({ ...amounts, [i.id]: e.target.value })} disabled={busy}/>}
-            {launchedCount > 0 && !allLaunched && <span className="text-xs text-success">{launchedCount} de {dates.length} lançadas</span>}
+          return <div key={i.id} className="fixed-row">
+            <div className="fixed-row-icon">{allLaunched ? <CheckCheck size={16}/> : i.frequency === 'Semanal' ? <Repeat size={16}/> : <Flower2 size={16}/>}</div>
+            <div className="fixed-row-info">
+              <p className="fixed-row-name">{i.name}</p>
+              <div className="fixed-row-meta">
+                {i.frequency === 'Semanal' ? <span>{dates.length}x no mês · {WEEKDAYS[i.weekday ?? 0]}</span> : i.due_day ? <span>Vence dia {i.due_day}</span> : null}
+                {i.variable && <span className="fixed-tag">valor muda todo mês</span>}
+                {launchedCount > 0 && !allLaunched && <span className="fixed-tag launched">{launchedCount} de {dates.length} lançadas</span>}
+              </div>
+            </div>
+            {allLaunched
+              ? <span className="fixed-done">Lançada{dates.length > 1 ? ` ${launchedCount}x` : ''} · {currency(Number(i.amount ?? 0))}</span>
+              : <input type="number" min="0" step="0.01" className="filter-select fixed-amount" aria-label={`Valor de ${i.name} neste mês`} placeholder={i.amount != null ? String(i.amount) : 'Valor do mês'} value={amounts[i.id] ?? (i.variable ? '' : i.amount ?? '')} onChange={e => setAmounts({ ...amounts, [i.id]: e.target.value })} disabled={busy}/>}
           </div>;
         })}</div>
-        <Button className="mt-4" disabled={busy || !pending.length} onClick={run}><CalendarCheck/>{busy ? 'Lançando…' : 'Lançar despesas fixas do mês'}</Button>
-        <p className="text-xs text-muted-foreground mt-2">Contas sem valor ficam para depois. Nenhuma conta é lançada duas vezes na mesma data.</p>
+        <div className="fixed-footer">
+          <Button disabled={busy || !pending.length} onClick={run}><CalendarCheck/>{busy ? 'Lançando…' : 'Lançar despesas fixas do mês'}</Button>
+          <p className="text-xs text-muted-foreground">Contas sem valor ficam para depois. Nenhuma conta é lançada duas vezes na mesma data.</p>
+        </div>
       </>}
     </section>
     <section className="data-panel"><div className="panel-title mb-4"><div><h2>Minhas despesas fixas</h2><p>Edite o valor padrão, a repetição e para quem é.</p></div></div>
-      <div className="space-y-3">{items.map(i => <FixedRow key={`${i.id}-${i.amount}-${i.name}-${i.frequency}-${i.weekday}`} item={i} categories={categories}/>)}<FixedRow categories={categories}/></div>
+      <div className="space-y-3 px-6 pb-6">{items.map(i => <FixedRow key={`${i.id}-${i.amount}-${i.name}-${i.frequency}-${i.weekday}`} item={i} categories={categories}/>)}<FixedRow categories={categories}/></div>
     </section>
   </>;
 }
