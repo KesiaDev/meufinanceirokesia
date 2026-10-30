@@ -28,4 +28,21 @@ describe('despesas fixas', () => {
     const launched = ['psico|2026-11-04', 'psico|2026-11-11', 'psico|2026-11-18', 'psico|2026-11-25'];
     expect(launchPlan('2026-11', items, launched, {})).toEqual([]);
   });
+  it('move a conta pendente lançada antes do dia de vencimento ser definido, em vez de duplicar', () => {
+    const plan = launchPlan('2026-11', [{ id: 'claro', amount: 35, due_day: 20 }], [], {});
+    const pending = [{ id: 'row-1', fixed_expense_id: 'claro', expense_date: '2026-11-01' }];
+    const { moves, inserts } = pendingMoves(plan, pending);
+    expect(moves).toEqual([{ row: pending[0], amount: 35, date: '2026-11-20' }]);
+    expect(inserts).toEqual([]);
+  });
+  it('não move conta semanal nem lançamentos novos; move só com uma pendente', () => {
+    const weeklyPlan = launchPlan('2026-11', [{ id: 'psico', amount: 180, frequency: 'Semanal' as const, weekday: 3 }], [], {});
+    const weeklyPending = [{ id: 'row-a', fixed_expense_id: 'psico', expense_date: '2026-11-04' }];
+    expect(pendingMoves(weeklyPlan, weeklyPending).moves).toEqual([]);
+    const freshPlan = launchPlan('2026-11', [{ id: 'novo', amount: 50, due_day: 20 }], [], {});
+    expect(pendingMoves(freshPlan, []).inserts).toEqual(freshPlan);
+    const doublePlan = launchPlan('2026-11', [{ id: 'claro', amount: 35, due_day: 20 }], [], {});
+    const twoPending = [{ id: 'row-1', fixed_expense_id: 'claro', expense_date: '2026-11-01' }, { id: 'row-2', fixed_expense_id: 'claro', expense_date: '2026-11-02' }];
+    expect(pendingMoves(doublePlan, twoPending).moves).toEqual([]);
+  });
 });
