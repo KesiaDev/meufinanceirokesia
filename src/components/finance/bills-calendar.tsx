@@ -36,40 +36,48 @@ export function BillsCalendar({ expenses, month }: { expenses: Tables<'expenses'
     catch { toast.error('Não foi possível marcar como paga.'); }
     setBusy('');
   }
-  const Row = ({ e }: { e: Tables<'expenses'> }) => (
-    <li className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
-      <div className="min-w-0"><p className="text-sm font-semibold truncate">{e.description}</p><p className="text-xs text-muted-foreground">Vence {dateLabel(dueOf(e))}{isOpen(e) ? '' : ' · paga'}</p></div>
-      <div className="flex items-center gap-2 shrink-0"><span className="text-sm font-bold">{currency(Number(e.total_amount))}</span>{isOpen(e) && <Button size="sm" variant="outline" disabled={busy === e.id} onClick={() => markPaid(e.id)}><CheckCheck />Paguei</Button>}</div>
-    </li>
-  );
+  const Row = ({ e, tone = '' }: { e: Tables<'expenses'>; tone?: string }) => {
+    const d = dueOf(e);
+    return <li className={`bill-row ${tone}`}>
+      <div className="bill-date"><strong>{d.slice(8, 10)}</strong><span>{new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`)).replace('.', '')}</span></div>
+      <div className="min-w-0 flex-1"><p className="bill-name">{e.description}</p><p className="bill-meta">{e.category ?? 'Sem categoria'}{isOpen(e) ? '' : ' · paga ✓'}</p></div>
+      <span className="bill-amount">{currency(Number(e.total_amount))}</span>
+      {isOpen(e) && <Button size="sm" variant="outline" className="shrink-0" disabled={busy === e.id} onClick={() => markPaid(e.id)}><CheckCheck /><span className="max-sm:hidden">Paguei</span></Button>}
+    </li>;
+  };
+  const sum = (l: Tables<'expenses'>[]) => l.reduce((s, e) => s + Number(e.total_amount), 0);
 
   return <>
-    {(overdue.length > 0 || soon.length > 0) && <section className="data-panel mb-5">
-      <div className="panel-title mb-3"><h2 className="flex items-center gap-2"><BellRing size={16} className="text-primary" /> Avisos de contas</h2></div>
-      {overdue.length > 0 && <><p className="text-sm font-bold text-destructive flex items-center gap-2 mt-2"><AlertTriangle size={15} /> Atrasadas ({overdue.length})</p><ul>{overdue.map(e => <Row key={e.id} e={e} />)}</ul></>}
-      {soon.length > 0 && <><p className="text-sm font-bold text-warning flex items-center gap-2 mt-4"><Clock3 size={15} /> Vencem nos próximos 7 dias ({soon.length})</p><ul>{soon.map(e => <Row key={e.id} e={e} />)}</ul></>}
-    </section>}
-    <section className="data-panel">
-      <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-muted-foreground mb-2">{WEEK.map(w => <div key={w}>{w}</div>)}</div>
-      <div className="grid grid-cols-7 gap-1">
-        {Array.from({ length: first }).map((_, i) => <div key={`b${i}`} />)}
+    {(overdue.length > 0 || soon.length > 0) && <div className="bill-alerts">
+      {overdue.length > 0 && <section className="bill-alert late">
+        <header><span className="bill-alert-icon"><AlertTriangle size={17} /></span><div><h2>Atrasadas</h2><p>{overdue.length} {overdue.length === 1 ? 'conta' : 'contas'} · {currency(sum(overdue))}</p></div></header>
+        <ul>{overdue.map(e => <Row key={e.id} e={e} tone="late" />)}</ul></section>}
+      {soon.length > 0 && <section className="bill-alert soon">
+        <header><span className="bill-alert-icon"><Clock3 size={17} /></span><div><h2>Vencem nos próximos 7 dias</h2><p>{soon.length} {soon.length === 1 ? 'conta' : 'contas'} · {currency(sum(soon))}</p></div></header>
+        <ul>{soon.map(e => <Row key={e.id} e={e} />)}</ul></section>}
+    </div>}
+    <section className="data-panel bill-calendar">
+      <div className="panel-title"><div><h2 className="flex items-center gap-2"><BellRing size={16} className="text-primary" /> Mês de contas</h2><p>Toque em um dia para ver o que vence.</p></div>
+        <div className="bill-legend"><span><i className="dot pending" />A pagar</span><span><i className="dot late" />Atrasada</span><span><i className="dot paid" />Paga</span></div></div>
+      <div className="bill-week">{WEEK.map(w => <div key={w}>{w}</div>)}</div>
+      <div className="bill-grid">
+        {Array.from({ length: first }).map((_, i) => <div key={`b${i}`} className="bill-blank" />)}
         {Array.from({ length: days }, (_, i) => {
           const d = `${month}-${String(i + 1).padStart(2, '0')}`;
           const items = monthItems.filter(e => dueOf(e) === d);
           const pending = items.filter(isOpen);
-          const late = pending.length > 0 && d < today;
-          const total = pending.reduce((s, e) => s + Number(e.total_amount), 0);
+          const state = !items.length ? '' : pending.length ? (d < today ? 'late' : 'pending') : 'paid';
           return <button key={d} type="button" onClick={() => setDay(d)} aria-label={`Dia ${i + 1}`}
-            className={`min-h-16 rounded-md border p-1 text-left transition-colors ${day === d ? 'border-primary bg-accent' : 'border-border hover:bg-accent/60'} ${d === today ? 'ring-2 ring-primary' : ''}`}>
-            <div className="text-xs font-bold">{i + 1}</div>
-            {items.length > 0 && <div className={`mt-1 text-[10px] font-bold leading-tight ${late ? 'text-destructive' : pending.length ? 'text-primary' : 'text-success'}`}>
-              {pending.length ? <>{pending.length} {pending.length === 1 ? 'conta' : 'contas'}<span className="hidden sm:block">{currency(total)}</span></> : '✓ pago'}
-            </div>}
+            className={`bill-day ${state} ${day === d ? 'selected' : ''} ${d === today ? 'today' : ''}`}>
+            <span className="bill-day-num">{i + 1}</span>
+            {items.length > 0 && <span className="bill-day-info">
+              {pending.length ? <><b>{currency(sum(pending))}</b><small>{pending.length} {pending.length === 1 ? 'conta' : 'contas'}</small></> : <small>✓ pago</small>}
+            </span>}
           </button>;
         })}
       </div>
-      <div className="mt-5">
-        {day ? <><h3 className="font-bold text-sm mb-2">Contas do dia {dateLabel(day)}</h3>{selected.length ? <ul>{selected.map(e => <Row key={e.id} e={e} />)}</ul> : <p className="text-sm text-muted-foreground">Nenhuma conta neste dia.</p>}</> : <p className="text-sm text-muted-foreground">Toque em um dia para ver as contas.</p>}
+      <div className="bill-day-detail">
+        {day ? <><h3>Contas do dia {dateLabel(day)}</h3>{selected.length ? <ul>{selected.map(e => <Row key={e.id} e={e} />)}</ul> : <p className="text-sm text-muted-foreground">Nenhuma conta neste dia ✿</p>}</> : <p className="text-sm text-muted-foreground">Toque em um dia para ver as contas.</p>}
       </div>
     </section>
   </>;
