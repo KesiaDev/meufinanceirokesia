@@ -285,3 +285,20 @@
  .bill-day-info small { font-size:9px; }
  .bill-legend { display:none; }
 }
+/* Despesas: clique para ver o que está pago e o que ainda deve */
+.status-filters { display:flex; flex-wrap:wrap; gap:10px; margin:0 24px 8px; }
+.status-filter { display:inline-flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border); border-radius:8px; padding:9px 13px; font-size:11px; font-weight:700; color:var(--muted-foreground); cursor:pointer; box-shadow:var(--soft-shadow); transition:border-color .15s,background .15s,color .15s; }
+.status-filter:hover { border-color:var(--petal); color:var(--foreground); }
+.status-filter.active { border-color:var(--primary); background:var(--petal-soft); color:var(--primary); }
+.status-filter-count { background:var(--muted); border-radius:999px; padding:1px 7px; font-size:10px; font-weight:800; }
+.status-filter.active .status-filter-count { background:var(--card); }
+.status-filter-total { font-variant-numeric:tabular-nums; }
+.pay-chip { display:inline-block; padding:5px 9px; border-radius:4px; font-size:10px; font-weight:700; white-space:nowrap; }
+.pay-chip.paid { background:var(--success-soft); color:var(--success); }
+.pay-chip.pending { background:var(--petal-soft); color:var(--destructive); }
+.pay-chip.partial { background:var(--warning-soft); color:var(--warning); }
+.pay-chip.cancelled { background:var(--muted); color:var(--muted-foreground); }
+@media (max-width:760px) {
+ .status-filters { margin:0 14px 6px; gap:8px; }
+ .status-filter { padding:8px 10px; gap:6px; }
+}
