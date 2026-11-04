@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { classifyBeneficiary, classifyExpense } from '@/lib/categories.functions';
 import { BENEFICIARY_VALUES, rebecaShare, type BeneficiaryType } from '@/lib/beneficiary';
 import { currency, dateLabel } from '@/lib/finance';
+import { isCancelledStatus, isPaidStatus } from '@/lib/expense-status';
 import type { Tables } from '@/integrations/supabase/types';
 import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,7 +45,7 @@ export function ExpenseTable({ expenses, categories, showRebecaShare = false }: 
       <td><BeneficiaryPicker id={`beneficiary-${e.id}`} compact value={drafts[e.id] ?? choiceOf(e)} disabled={busy !== null} onChange={value => changeBeneficiary(e, value)} onPercentageCommit={() => commitPercentage(e)}/></td>
       <td className="whitespace-nowrap">{currency(Number(e.total_amount))}</td>
       {showRebecaShare && <td className="whitespace-nowrap">{currency(rebecaShare(e))}</td>}
-      <td>{e.payment_status}</td>
+      <td><span className={`pay-chip ${isPaidStatus(e.payment_status) ? 'paid' : isCancelledStatus(e.payment_status) ? 'cancelled' : e.payment_status === 'Parcialmente pago' ? 'partial' : 'pending'}`}>{e.payment_status}</span></td>
       <td><div className="flex"><Button variant="ghost" size="icon" title="Editar despesa" aria-label={`Editar ${e.description}`} onClick={() => setEditing(e)}><Pencil/></Button><Button variant="ghost" size="icon" title="Excluir despesa" aria-label={`Excluir ${e.description}`} onClick={() => setRemoving(e)}><Trash2 className="text-destructive"/></Button></div></td>
     </tr>)}
   </tbody></table>
