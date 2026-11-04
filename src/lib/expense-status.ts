@@ -11,6 +11,9 @@ export const STATUS_FILTERS = [
 
 export const statusFilterLabel = (filter: StatusFilter) => STATUS_FILTERS.find(f => f.key === filter)?.label ?? 'Todas';
 
+/** Singular wording for the "nothing here" notice: "Nenhuma despesa paga neste período". */
+export const statusFilterSingular = (filter: StatusFilter) => filter === 'paid' ? 'paga' : filter === 'unpaid' ? 'a pagar' : filter === 'cancelled' ? 'cancelada' : '';
+
 export const isPaidStatus = (status: string) => status === 'Pago';
 export const isUnpaidStatus = (status: string) => status === 'Pendente' || status === 'Parcialmente pago';
 export const isCancelledStatus = (status: string) => status === 'Cancelado';
