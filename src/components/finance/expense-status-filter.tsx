@@ -11,7 +11,7 @@ export function ExpenseStatusFilter({ expenses, value, onChange }: { expenses: T
   return <div className="status-filters" role="group" aria-label="Mostrar despesas por situação de pagamento">
     {STATUS_FILTERS.map(({ key, label }) => {
       const group = summary[key];
-      if (key !== 'all' && group.count === 0) return null;
+      if (key !== 'all' && group.count === 0 && value !== key) return null;
       const Icon = ICONS[key];
       return <button key={key} type="button" aria-pressed={value === key} className={`status-filter ${key} ${value === key ? 'active' : ''}`} onClick={() => onChange(key)}>
         <Icon size={13} />
