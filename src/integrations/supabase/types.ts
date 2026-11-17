@@ -377,6 +377,7 @@ export type Database = {
       travel_expenses: {
         Row: {
           amount: number
+          category: string
           created_at: string
           currency: string
           description: string
@@ -385,12 +386,14 @@ export type Database = {
           id: string
           mime_type: string | null
           notes: string
+          paid_by: string
           person: string
           trip: string
           user_id: string
         }
         Insert: {
           amount?: number
+          category?: string
           created_at?: string
           currency?: string
           description?: string
@@ -399,12 +402,14 @@ export type Database = {
           id?: string
           mime_type?: string | null
           notes?: string
+          paid_by?: string
           person: string
           trip?: string
           user_id: string
         }
         Update: {
           amount?: number
+          category?: string
           created_at?: string
           currency?: string
           description?: string
@@ -413,6 +418,7 @@ export type Database = {
           id?: string
           mime_type?: string | null
           notes?: string
+          paid_by?: string
           person?: string
           trip?: string
           user_id?: string

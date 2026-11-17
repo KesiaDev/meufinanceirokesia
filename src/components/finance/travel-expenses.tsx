@@ -5,7 +5,7 @@ import { Camera, Paperclip, Plus, Trash2, Eye, Download, Plane, LoaderCircle } f
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { validateDocument } from '@/lib/finance';
-import { travelTotals, travelCsv, type TravelPerson } from '@/lib/travel';
+import { travelTotals, travelCsv, TRAVEL_CATEGORIES, TRAVEL_PAYERS, type TravelPerson } from '@/lib/travel';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Item = Tables<'travel_expenses'>;
@@ -15,7 +15,7 @@ export function TravelExpenses({ items, userId }: { items: Item[]; userId: strin
   const [person, setPerson] = useState<TravelPerson>('Késia');
   const [busy, setBusy] = useState(false);
   const qc = useQueryClient(); const file = useRef<HTMLInputElement>(null); const cam = useRef<HTMLInputElement>(null);
-  const rows = items.filter(i => i.person === person); const t = travelTotals(rows);
+  const rows = items.filter(i => i.person === person); const t = travelTotals(rows.filter(r => r.paid_by === 'Empresa')); const own = travelTotals(rows.filter(r => r.paid_by === 'Conta própria'));
   const refresh = () => qc.invalidateQueries({ queryKey: ['workspace'] });
 
   async function add(f?: File) {
@@ -67,9 +67,9 @@ export function TravelExpenses({ items, userId }: { items: Item[]; userId: strin
   return <>
     <div className="travel-tabs" role="tablist">{(['Késia', 'Gisele'] as const).map(p => <button key={p} role="tab" aria-selected={person === p} className={`travel-tab ${person === p ? 'active' : ''}`} onClick={() => setPerson(p)}><Plane size={15} />{p}<span>{items.filter(i => i.person === p).length}</span></button>)}</div>
     <div className="stat-grid">
-      <article className="stat"><div className="stat-top"><span>Total em euros</span></div><div className="stat-value">{money(t.EUR, 'EUR')}</div><p className="stat-caption">{rows.length} despesas de {person}</p></article>
-      <article className="stat"><div className="stat-top"><span>Total em reais</span></div><div className="stat-value">{money(t.BRL, 'BRL')}</div><p className="stat-caption">Gastos pagos em R$</p></article>
-      <article className="stat"><div className="stat-top"><span>Sem comprovante</span></div><div className="stat-value">{String(rows.filter(r => !r.file_path).length).padStart(2, '0')}</div><p className="stat-caption">Anexe antes de enviar</p></article>
+      <article className="stat"><div className="stat-top"><span>Empresa paga</span></div><div className="stat-value">{money(t.EUR, 'EUR')}</div><p className="stat-caption">+ {money(t.BRL, 'BRL')} · para enviar à empresa</p></article>
+      <article className="stat"><div className="stat-top"><span>Por conta própria</span></div><div className="stat-value">{money(own.EUR, 'EUR')}</div><p className="stat-caption">+ {money(own.BRL, 'BRL')} · dias livres</p></article>
+      <article className="stat"><div className="stat-top"><span>Sem comprovante</span></div><div className="stat-value">{String(rows.filter(r => !r.file_path).length).padStart(2, '0')}</div><p className="stat-caption">{rows.length} despesas de {person}</p></article>
     </div>
     <input ref={cam} type="file" accept="image/*" capture="environment" className="hidden" onChange={e => e.target.files?.[0] && add(e.target.files[0])} />
     <input ref={file} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e => e.target.files?.[0] && add(e.target.files[0])} />
@@ -82,9 +82,11 @@ export function TravelExpenses({ items, userId }: { items: Item[]; userId: strin
     <section className="data-panel">
       {rows.length ? <div className="travel-list">{rows.map(i => <div key={i.id} className="travel-row">
         <input aria-label="O que foi" className="filter-select travel-desc" defaultValue={i.description} placeholder="O que foi? (ex.: táxi aeroporto)" onBlur={e => e.target.value !== i.description && update(i.id, { description: e.target.value })} />
+        <select aria-label="Tipo" className="filter-select" value={i.category} onChange={e => update(i.id, { category: e.target.value })}>{TRAVEL_CATEGORIES.map(c => <option key={c}>{c}</option>)}</select>
+        <select aria-label="Quem paga" className="filter-select" value={i.paid_by} onChange={e => update(i.id, { paid_by: e.target.value })}>{TRAVEL_PAYERS.map(c => <option key={c} value={c}>{c === 'Empresa' ? 'Empresa paga' : 'Conta própria'}</option>)}</select>
         <input aria-label="Data" type="date" className="filter-select" defaultValue={i.expense_date} onBlur={e => e.target.value && e.target.value !== i.expense_date && update(i.id, { expense_date: e.target.value })} />
         <input aria-label="Valor" type="number" step="0.01" min="0" className="filter-select travel-amount" defaultValue={Number(i.amount) || ''} placeholder="0,00" onBlur={e => Number(e.target.value || 0) !== Number(i.amount) && update(i.id, { amount: Number(e.target.value || 0) })} />
-        <select aria-label="Moeda" className="filter-select" value={i.currency} onChange={e => update(i.id, { currency: e.target.value })}><option value="EUR">€</option><option value="BRL">R$</option></select>
+        <select aria-label="Moeda" className="filter-select" value={i.currency} onChange={e => update(i.id, { currency: e.target.value })}><option value="EUR">€ Euro</option><option value="BRL">R$ Real</option></select>
         <input aria-label="Observação" className="filter-select travel-desc" defaultValue={i.notes} placeholder="Observação" onBlur={e => e.target.value !== i.notes && update(i.id, { notes: e.target.value })} />
         <div className="flex">
           {i.file_path ? <Button variant="ghost" size="icon" title="Ver comprovante" aria-label="Ver comprovante" onClick={() => open(i)}><Eye /></Button>

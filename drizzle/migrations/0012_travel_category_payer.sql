@@ -1,0 +1,1 @@
+ALTER TABLE public.travel_expenses ADD COLUMN category text NOT NULL DEFAULT 'Outros', ADD COLUMN paid_by text NOT NULL DEFAULT 'Empresa' CHECK (paid_by IN ('Empresa','Conta própria'));
