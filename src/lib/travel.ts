@@ -1,8 +1,8 @@
 export type TravelPerson = 'Késia' | 'Gisele';
 type Row = { amount: number | string; currency: string; expense_date: string; description: string; notes: string; person: string };
 export function travelTotals(rows: Row[]) {
-  const cents = { EUR: 0, BRL: 0 } as Record<string, number>;
-  for (const r of rows) cents[r.currency] = (cents[r.currency] ?? 0) + Math.round(Number(r.amount) * 100);
+  const cents: { EUR: number; BRL: number } = { EUR: 0, BRL: 0 };
+  for (const r of rows) if (r.currency === 'EUR' || r.currency === 'BRL') cents[r.currency] += Math.round(Number(r.amount) * 100);
   return { EUR: cents.EUR / 100, BRL: cents.BRL / 100 };
 }
 const q = (v: string) => `"${v.replace(/"/g, '""')}"`;
