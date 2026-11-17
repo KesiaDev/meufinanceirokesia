@@ -374,6 +374,59 @@ export type Database = {
         }
         Relationships: []
       }
+      travel_expenses: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          description: string
+          expense_date: string
+          file_path: string | null
+          id: string
+          mime_type: string | null
+          notes: string
+          person: string
+          trip: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          expense_date?: string
+          file_path?: string | null
+          id?: string
+          mime_type?: string | null
+          notes?: string
+          person: string
+          trip?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          expense_date?: string
+          file_path?: string | null
+          id?: string
+          mime_type?: string | null
+          notes?: string
+          person?: string
+          trip?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

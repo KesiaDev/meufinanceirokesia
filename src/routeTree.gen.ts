@@ -23,6 +23,7 @@ import { Route as AuthenticatedGanhosRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedRebecaRouteImport } from './routes/_authenticated/rebeca'
 import { Route as AuthenticatedRelatoriosRouteImport } from './routes/_authenticated/relatorios'
+import { Route as AuthenticatedViagemRouteImport } from './routes/_authenticated/viagem'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -94,6 +95,11 @@ const AuthenticatedRelatoriosRoute = AuthenticatedRelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedViagemRoute = AuthenticatedViagemRouteImport.update({
+  id: '/viagem',
+  path: '/viagem',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRoute
   '/rebeca': typeof AuthenticatedRebecaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/viagem': typeof AuthenticatedViagemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelRoute
   '/rebeca': typeof AuthenticatedRebecaRoute
   '/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/viagem': typeof AuthenticatedViagemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/_authenticated/rebeca': typeof AuthenticatedRebecaRoute
   '/_authenticated/relatorios': typeof AuthenticatedRelatoriosRoute
+  '/_authenticated/viagem': typeof AuthenticatedViagemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/rebeca'
     | '/relatorios'
+    | '/viagem'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/rebeca'
     | '/relatorios'
+    | '/viagem'
   id:
     | '__root__'
     | '/'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/_authenticated/rebeca'
     | '/_authenticated/relatorios'
+    | '/_authenticated/viagem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -298,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelatoriosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/viagem': {
+      id: '/_authenticated/viagem'
+      path: '/viagem'
+      fullPath: '/viagem'
+      preLoaderRoute: typeof AuthenticatedViagemRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -312,6 +331,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
   AuthenticatedRebecaRoute: typeof AuthenticatedRebecaRoute
   AuthenticatedRelatoriosRoute: typeof AuthenticatedRelatoriosRoute
+  AuthenticatedViagemRoute: typeof AuthenticatedViagemRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -325,6 +345,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPainelRoute: AuthenticatedPainelRoute,
   AuthenticatedRebecaRoute: AuthenticatedRebecaRoute,
   AuthenticatedRelatoriosRoute: AuthenticatedRelatoriosRoute,
+  AuthenticatedViagemRoute: AuthenticatedViagemRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
